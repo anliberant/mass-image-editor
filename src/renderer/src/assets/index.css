@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.info-badge {
+    @apply w-[25%] h-16 flex-shrink-0 border border-gray-400 bg-gray-200 shadow-md 
+    dark:shadow-gray-400 dark:bg-gray-500 flex flex-col py-2 pl-9;
+}
+.info-badge__first {
+    border-radius: 12px 0px 0px 12px;
+}
+.info-badge__last {
+    border-radius: 0px 12px 12px 0px;
+}
