@@ -9,7 +9,7 @@ const Header = ({ setImages, setDestPath }: HeaderProps): JSX.Element => {
   return (
     <div className="relative">
       <div className="h-[196px] w-full flex justify-center pt-5 overflow-hidden">
-        <Toaster gutter={24} />
+        <Toaster gutter={8} position="bottom-left" />
         <DarkModeSwitch />
         <ImgForm setImages={setImages} />
         <span className="absolute left-0 bottom-0">

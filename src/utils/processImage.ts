@@ -1,5 +1,6 @@
 /* eslint-disable */
 const sharp = require('sharp');
+import fs from 'fs';
 
 sharp.cache(false);
 
@@ -16,6 +17,7 @@ const processImage = async (
   dest: string
 ): Promise<sharp.OutputInfo> => {
   console.log(imgPath, width, height, format, dest);
+
   try {
     return await sharp(imgPath)
       // .toFormat(format)

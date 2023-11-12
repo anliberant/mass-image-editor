@@ -1,15 +1,20 @@
 import { ChangeEvent } from 'react';
 import toast from 'react-hot-toast';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
+import 'react-tooltip/dist/react-tooltip.css';
 import { FolderProps } from './FolderForm.props';
 import { isFileImage } from '../../../../../utils/processImage';
 import { getImageInfo } from './../../../../../utils/getImageInfo';
 
 const notifyError = (text: string): unknown => toast.error(text, { duration: 4000 });
 
-const FolderForm = ({ setImages }: FolderProps): JSX.Element => {
+const FolderForm = ({ setImages, setDestPath }: FolderProps): JSX.Element => {
   const folderOnChange = async (e: ChangeEvent<HTMLInputElement>): void => {
-    if (!e.target.files?.length) return;
+    console.log('folder on change');
+    if (!e.target.files?.length) {
+      notifyError('Please select a non-empty directory');
+    }
     setImages([]);
     const files: FileList = e.target.files;
     const images: ImageFileDto[] = [];
@@ -27,8 +32,20 @@ const FolderForm = ({ setImages }: FolderProps): JSX.Element => {
   };
 
   const pathFolderOnChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    console.log('pathFolderOnChange');
-    console.log('path', e.target);
+    console.log('here', e);
+    // if (!e?.target?.files[0]?.webkitRelativePath) {
+    //   notifyError('Please select a non-empty directory');
+    // }
+    if (!e.target.files?.length) {
+      notifyError('Please select a non-empty directory');
+    } else {
+      const webKitPath = e.target.files[0]?.path;
+      console.log('webkit path: ' + webKitPath);
+      if (!webKitPath) {
+        return;
+      }
+      setDestPath(webKitPath.substring(0, webKitPath.lastIndexOf('\\')));
+    }
   };
   // async function getFiles(dir, files = []) {
   //   // Get an array of all files and directories in the passed directory using fs.readdirSync
@@ -83,11 +100,15 @@ const FolderForm = ({ setImages }: FolderProps): JSX.Element => {
           </p>
           <input type="file" className="hidden" webkitdirectory="" onChange={folderOnChange} />
         </label>
+        <ReactTooltip className="text-white bg-red-500 z-50" id="my-tooltip" />
         <label
           className="flex items-center justify-center w-[216px] h-[45px] border border-gray-300 border-dashed 
         rounded-lg cursor-pointer 
         bg-gray-100 hover:bg-gray-250 dark:hover:bg-bray-400 dark:bg-gray-500 dark:hover:bg-gray-250
         hover:shadow-lg dark:hover:shadow-gray-400 hover:rotate-4"
+          data-tooltip-id="my-tooltip"
+          data-tooltip-content="Select a non-empty folder!"
+          data-tooltip-place="top"
         >
           <svg
             width="24"
@@ -125,12 +146,7 @@ const FolderForm = ({ setImages }: FolderProps): JSX.Element => {
           <p className="mb-1 pl-2 text-sm text-gray-500 dark:text-gray-400">
             <span className="font-semibold">Select a path dest</span>
           </p>
-          <input
-            type="file"
-            className="hidden"
-            webkitdirectory=""
-            onChange={(e): void => pathFolderOnChange(e)}
-          />
+          <input type="file" className="hidden" webkitdirectory="" onChange={pathFolderOnChange} />
         </label>
       </div>
     </>

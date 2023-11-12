@@ -97,11 +97,20 @@ function App(): JSX.Element {
   useEffect(() => {
     getDoneImg();
   }, []);
+  useEffect(() => {
+    console.log('desc Path', destPath);
+  }, [destPath]);
 
   return (
     <>
       <Header setImages={setImages} setDestPath={setDestPath} />
       <div className="px-10">
+        {destPath && (
+          <>
+            <span>Destination:</span>
+            <span className="pl-4  text-xs ml-auto mr-auto">{destPath}</span>
+          </>
+        )}
         <Tabs tabStatus={tabStatus} setTabStatus={setTabStatus} />
         {images.length > 0 && tabStatus === 'files' && <FilesTable images={images} />}
         {tabStatus === 'options' && <Options />}

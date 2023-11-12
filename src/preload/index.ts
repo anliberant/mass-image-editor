@@ -21,6 +21,8 @@ const api = {
   // getStat: (path: string) => fs.lstatSync(path),
   isDirectory: (path: string): boolean => fs.lstatSync(path).isDirectory(),
   join: (...args): string => join(...args),
+  existsS: (path: string): boolean => fs.existsSync(path),
+  mkdirS: (path: string): void => fs.mkdirSync(path),
   send: (channel: string, data: ImageFileDto | ImgNotifyDto): void =>
     ipcRenderer.send(channel, data),
   // readdir: (path: string) => readdir(path),

@@ -6,6 +6,7 @@ import path, { join } from 'path';
 import icon from '../../resources/icon.png?asset';
 import { processImage } from '../utils/processImage';
 import { ShortImageDto } from '../dtos/img.dto';
+import * as fs from 'fs';
 
 const isDev = process.env.NODE_ENV !== 'production';
 // const isMac = process.platform === 'darwin';
@@ -47,10 +48,15 @@ async function optimizeAndResize({ imgPath, width, height, dest }: ShortImageDto
   console.log('width', width);
   console.log('height', height);
   console.log('dest', dest);
+  if (!fs.existsSync(dest)) {
+    console.log('dest file not found');
+    fs.mkdirSync(dest);
+  }
   try {
     const fileName = path.basename(imgPath);
     console.log('fileName', fileName);
-    await processImage(imgPath, width, height, 'jpeg', dest + '\\').then((res) => {
+    await processImage(imgPath, width, height, 'jpeg', dest + '\\' + fileName).then((res) => {
+      console.log('res', res);
       const file = { ...res, name: fileName, imgPath };
       console.log('file before sending', file);
       mainWindow.webContents.send('image:done', file);
