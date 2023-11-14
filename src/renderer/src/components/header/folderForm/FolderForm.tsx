@@ -7,11 +7,10 @@ import { FolderProps } from './FolderForm.props';
 import { isFileImage } from '../../../../../utils/processImage';
 import { getImageInfo } from './../../../../../utils/getImageInfo';
 
-const notifyError = (text: string): unknown => toast.error(text, { duration: 4000 });
+const notifyError = (text: string): unknown => toast.error(text, { duration: 1500 });
 
 const FolderForm = ({ setImages, setDestPath }: FolderProps): JSX.Element => {
   const folderOnChange = async (e: ChangeEvent<HTMLInputElement>): void => {
-    console.log('folder on change');
     if (!e.target.files?.length) {
       notifyError('Please select a non-empty directory');
     }
@@ -33,14 +32,10 @@ const FolderForm = ({ setImages, setDestPath }: FolderProps): JSX.Element => {
 
   const pathFolderOnChange = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log('here', e);
-    // if (!e?.target?.files[0]?.webkitRelativePath) {
-    //   notifyError('Please select a non-empty directory');
-    // }
     if (!e.target.files?.length) {
       notifyError('Please select a non-empty directory');
     } else {
       const webKitPath = e.target.files[0]?.path;
-      console.log('webkit path: ' + webKitPath);
       if (!webKitPath) {
         return;
       }

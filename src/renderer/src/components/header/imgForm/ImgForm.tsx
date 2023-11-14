@@ -21,7 +21,6 @@ const ImgForm = ({ setImages }: ImgFormProps): JSX.Element => {
         notifyError('Please select a image');
       } else {
         const newImage = getImageInfo(file);
-        console.log('new image path', newImage.dirName);
         images.push(newImage);
       }
     });

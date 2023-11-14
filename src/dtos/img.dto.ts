@@ -23,6 +23,14 @@ export interface ShortImageDto {
   width: number;
   height: number;
   dest: string;
-  dirName: string;
+  // dirName: string;
   openDestFolder?: boolean;
+}
+export interface ImgNotifyDto {
+  format: string;
+  width: number;
+  height: number;
+  channels: number;
+  premultiplied: boolean;
+  size: number;
 }

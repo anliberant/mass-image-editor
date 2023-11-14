@@ -19,13 +19,13 @@ function App(): JSX.Element {
   const [tabStatus, setTabStatus] = useState<TabStatusType>('files');
   const [allOptimized, setAllOptimized] = useState(false);
   const [destPath, setDestPath] = useState('');
+  const [destNameFolder, setDestNameFolder] = useState('mie');
 
   const clearImagesList = (): void => setImages([]);
 
   console.log('Component launched');
   const getDoneImg = useCallback(() => {
     api.on('image:done', (event, res) => {
-      // let newImageList: ImageFileDto[] = [];
       const name = res.name;
       const nameIdx = name.lastIndexOf('.');
       const fullName = name.substring(0, nameIdx);
@@ -48,12 +48,16 @@ function App(): JSX.Element {
   }, [images]);
 
   const sendImagesList = (): void => {
+    console.log('send images list');
+    console.log('destpath: ' + destPath);
+
     images.forEach((image, i) => {
       const imgPath = image.file.path;
-      console.log('imgPath ma App.ts', imgPath);
+      console.log('img path: ' + imgPath);
+      console.log('dest path: ' + destPath);
       api.send('image:resize', {
         imgPath,
-        dirName: image.dirName,
+        dest: destPath,
         width: 100,
         height: 100,
         openDestFolder: i === images.length - 1,
@@ -93,6 +97,16 @@ function App(): JSX.Element {
     calcTotalSize();
     calcOptimizedSize();
     calcTotalPercentage();
+    if (!destPath) {
+      console.log('we here');
+      const newDestPath =
+        images[0].file.path.substring(0, images[0].file.path.lastIndexOf('\\') + 1) +
+        destNameFolder;
+      setDestPath(newDestPath);
+    }
+    if (tabStatus !== 'files') {
+      setTabStatus('files');
+    }
   }, [images]);
   useEffect(() => {
     getDoneImg();
@@ -113,7 +127,9 @@ function App(): JSX.Element {
         )}
         <Tabs tabStatus={tabStatus} setTabStatus={setTabStatus} />
         {images.length > 0 && tabStatus === 'files' && <FilesTable images={images} />}
-        {tabStatus === 'options' && <Options />}
+        {tabStatus === 'options' && (
+          <Options destNameFolder={destNameFolder} setDestNameFolder={setDestNameFolder} />
+        )}
         {images.length > 0 && tabStatus === 'files' && (
           <>
             <FilesInfo

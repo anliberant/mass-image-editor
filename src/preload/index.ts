@@ -2,30 +2,19 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
 import os from 'os';
 import { join, dirname } from 'path';
-// import { readdir } from 'fs/promises';
 import * as fs from 'fs';
-import { ImageFileDto } from '../dtos/img.dto';
-
-interface ImgNotifyDto {
-  format: string;
-  width: number;
-  height: number;
-  channels: number;
-  premultiplied: boolean;
-  size: number;
-}
+import { ImageFileDto, ImgNotifyDto } from '../dtos/img.dto';
 
 const api = {
   homedir: (): string => os.homedir(),
   dirName: (path: string): string => dirname(path),
-  // getStat: (path: string) => fs.lstatSync(path),
   isDirectory: (path: string): boolean => fs.lstatSync(path).isDirectory(),
   join: (...args): string => join(...args),
   existsS: (path: string): boolean => fs.existsSync(path),
   mkdirS: (path: string): void => fs.mkdirSync(path),
   send: (channel: string, data: ImageFileDto | ImgNotifyDto): void =>
     ipcRenderer.send(channel, data),
-  // readdir: (path: string) => readdir(path),
+  toggle: (channel: string, bool: boolean): void => ipcRenderer.send(channel, bool),
   readdirS: async (path: string): Promise<fs.Dirent[]> =>
     await fs.readdirSync(path, { encoding: 'utf-8', withFileTypes: true }),
   readFileS: async (path: string): Promise<Buffer> => await fs.readFileSync(path),

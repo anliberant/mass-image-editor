@@ -11,6 +11,7 @@ import * as fs from 'fs';
 const isDev = process.env.NODE_ENV !== 'production';
 // const isMac = process.platform === 'darwin';
 let mainWindow: BrowserWindow;
+let isOpenFolderAfterProcess = true;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -18,7 +19,7 @@ function createWindow(): void {
     height: 900,
     show: false,
     icon,
-    // autoHideMenuBar: true,
+    autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -44,30 +45,20 @@ function createWindow(): void {
   }
 }
 async function optimizeAndResize({ imgPath, width, height, dest }: ShortImageDto): Promise<void> {
-  console.log('imgPath', imgPath);
-  console.log('width', width);
-  console.log('height', height);
+  console.log('optimizeAndResize');
   console.log('dest', dest);
   if (!fs.existsSync(dest)) {
-    console.log('dest file not found');
     fs.mkdirSync(dest);
   }
   try {
     const fileName = path.basename(imgPath);
-    console.log('fileName', fileName);
     await processImage(imgPath, width, height, 'jpeg', dest + '\\' + fileName).then((res) => {
-      console.log('res', res);
       const file = { ...res, name: fileName, imgPath };
-      console.log('file before sending', file);
       mainWindow.webContents.send('image:done', file);
     });
   } catch (error) {
-    console.log(`An error occurred during processing: ${error}`);
+    throw new Error(error.message);
   }
-}
-
-function resizeImage({ imgPath, dirName, width, height, dest }: ShortImageDto): void {
-  optimizeAndResize({ imgPath, dirName, width, height, dest });
 }
 
 app.whenReady().then(() => {
@@ -76,13 +67,16 @@ app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron');
 
   ipcMain.on('image:resize', (_, file: ShortImageDto) => {
-    // console.log('path: ' + path);
-    file.dest = path.join(file.dirName, 'imageresizer');
-    // console.log('file imagePath: ' + file.imgPath);
+    console.log('image:resize');
+    console.log('file: ' + { ...file });
+    console.dir(file);
+    //file.dest = path.join(file.dirName, 'imageresizer');
     console.log('file dest: ' + file.dest);
-    console.log('file imgPath: ' + file.imgPath);
-    resizeImage(file);
-    file.openDestFolder && shell.openPath(file.dest);
+    optimizeAndResize(file);
+    isOpenFolderAfterProcess && file.openDestFolder && shell.openPath(file.dest);
+  });
+  ipcMain.on('isOpenFolder', (_, toggleBool: boolean) => {
+    isOpenFolderAfterProcess = toggleBool;
   });
 
   app.on('browser-window-created', (_, window) => {

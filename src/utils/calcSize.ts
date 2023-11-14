@@ -7,10 +7,10 @@ export function getSizeStr(size: number): string {
     : `${Math.ceil(size / 1024).toFixed(1)}Kb`;
 }
 
-export const calcPercentage = (size: number, size2: number): number => {
+export function calcPercentage(size: number, size2: number): number {
   if (!size || !size2) {
     return;
   }
 
   return (((size - size2) / size) * 100).toFixed(2);
-};
+}

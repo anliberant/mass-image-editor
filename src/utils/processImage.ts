@@ -4,6 +4,7 @@ import fs from 'fs';
 
 sharp.cache(false);
 
+/* eslint-disable */
 const isFileImage = (file: File): boolean => {
   const allowedFiles = ['image/gif', 'image/jpg', 'image/png', 'image/jpeg', 'svg'];
   return file && allowedFiles.includes(file['type']);
@@ -34,4 +35,3 @@ const processImage = async (
 };
 
 export { processImage, isFileImage };
-/* eslint-disable */
