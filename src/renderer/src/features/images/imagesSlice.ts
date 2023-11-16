@@ -56,7 +56,6 @@ export const imagesSlice = createSlice({
           return;
         }
         state.images = state.images.map((img) => {
-          console.log('img in reducer', img);
           if (img.originName === action.payload.name) {
             return {
               ...img,

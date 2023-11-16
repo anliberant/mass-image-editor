@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron';
+import { app, shell, BrowserWindow, ipcMain, Tray, nativeImage } from 'electron';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 
 import path, { join } from 'path';
@@ -62,7 +62,11 @@ async function optimizeAndResize({ imgPath, width, height, dest }: ShortImageDto
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron');
 
-  electronApp.setAppUserModelId('com.electron');
+  const tray = new Tray(nativeImage.createFromPath(icon));
+  tray.setToolTip('Mass Images Editor');
+  tray.on('click', () => {
+    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+  });
 
   ipcMain.on('image:resize', (_, file: ShortImageDto) => {
     optimizeAndResize(file);

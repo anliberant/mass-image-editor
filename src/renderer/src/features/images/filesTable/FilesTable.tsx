@@ -1,8 +1,7 @@
 import { useAppSelector } from '../../../hooks';
 
 import { getSizeStr } from '../../../../../utils/calcSize';
-import { StatusType } from '../../../../../dtos/img.dto';
-import TypeIcon from './typeIcon/TypeIcon';
+import TableRow from './tableRow/TableRow';
 
 const FilesTable = (): JSX.Element => {
   const { images } = useAppSelector((state) => state.images);
@@ -31,44 +30,19 @@ const FilesTable = (): JSX.Element => {
         </thead>
         <tbody>
           {images.map((file, i) => {
-            console.log('file in file table: ', file);
             const sizeStr = getSizeStr(file.size);
-            const optimizedSizeStr = getSizeStr(file.newSize || 0);
+            const optimizedSizeStr = getSizeStr(file.newSize);
             return (
-              <tr
+              <TableRow
                 key={file.name + i}
-                className={`${
-                  i % 2 === 0
-                    ? 'bg-white border-b dark:bg-gray-450 dark:border-gray-500'
-                    : 'border-b bg-gray-150 dark:bg-gray-500 dark:border-gray-500'
-                }`}
-              >
-                <th
-                  scope="row"
-                  className="flex gap-4 items-center px-6 py-2 font-medium text-dark whitespace-nowrap dark:text-white"
-                >
-                  <img
-                    src={file.src}
-                    width={20}
-                    height={20}
-                    alt={file.name}
-                    className="rounded-sm"
-                  />
-                  {file.name > 14 ? file.name.substring(0, 14) + '...' : file.name}
-                </th>
-                <td className="px-6 py-2 whitespace-nowrap dark:text-white">
-                  <TypeIcon type={file.format} />
-                </td>
-                <td className="px-6 py-2 whitespace-nowrap dark:text-white">{sizeStr}</td>
-                <td className="px-6 py-2 whitespace-nowrap dark:text-white">{optimizedSizeStr}</td>
-                <td
-                  className={`px-6 py-2 whitespace-nowrap  ${
-                    file.status === StatusType.completed ? 'text-green dark:text-green' : ''
-                  }`}
-                >
-                  {file.status}
-                </td>
-              </tr>
+                name={file.name}
+                i={i}
+                src={file.src}
+                sizeStr={sizeStr}
+                optimizedSize={optimizedSizeStr}
+                format={file.format}
+                status={file.status}
+              />
             );
           })}
         </tbody>
