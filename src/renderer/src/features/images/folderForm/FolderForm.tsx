@@ -3,31 +3,30 @@ import toast from 'react-hot-toast';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import 'react-tooltip/dist/react-tooltip.css';
-import { FolderProps } from './FolderForm.props';
 import { isFileImage } from '../../../../../utils/processImage';
-import { getImageInfo } from './../../../../../utils/getImageInfo';
+import { getImageInfo } from '../../../../../utils/getImageInfo';
+import { useAppDispatch } from '../../../hooks';
+
+import { addImage, nullImages, setDestPath } from '@renderer/features/images/imagesSlice';
 
 const notifyError = (text: string): unknown => toast.error(text, { duration: 1500 });
 
-const FolderForm = ({ setImages, setDestPath }: FolderProps): JSX.Element => {
+const FolderForm = (): JSX.Element => {
+  const dispatch = useAppDispatch();
   const folderOnChange = async (e: ChangeEvent<HTMLInputElement>): void => {
     if (!e.target.files?.length) {
       notifyError('Please select a non-empty directory');
     }
-    setImages([]);
+    dispatch(nullImages());
     const files: FileList = e.target.files;
-    const images: ImageFileDto[] = [];
-    Array.from(files).forEach((file) => {
+    Array.from(files).forEach(async (file) => {
       if (!isFileImage(file)) {
         notifyError('Please select a image');
       } else {
-        const newImage = getImageInfo(file);
-        images.push(newImage);
+        const newImage = await getImageInfo(file);
+        dispatch(addImage(newImage));
       }
     });
-    if (images.length > 0) {
-      setImages(images);
-    }
   };
 
   const pathFolderOnChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -39,7 +38,8 @@ const FolderForm = ({ setImages, setDestPath }: FolderProps): JSX.Element => {
       if (!webKitPath) {
         return;
       }
-      setDestPath(webKitPath.substring(0, webKitPath.lastIndexOf('\\')));
+      dispatch(setDestPath(webKitPath.substring(0, webKitPath.lastIndexOf('\\'))));
+      //setDestPath(webKitPath.substring(0, webKitPath.lastIndexOf('\\')));
     }
   };
   // async function getFiles(dir, files = []) {

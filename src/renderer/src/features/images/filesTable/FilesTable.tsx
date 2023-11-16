@@ -1,9 +1,12 @@
-import { getSizeStr } from '../../../../utils/calcSize';
-import { StatusType } from '../../../../dtos/img.dto';
-import TypeIcon from './typeIcon/TypeIcon';
-import { FilesTableProps } from './FilesTable.props';
+import { useAppSelector } from '../../../hooks';
 
-const FilesTable = ({ images }: FilesTableProps): JSX.Element => {
+import { getSizeStr } from '../../../../../utils/calcSize';
+import { StatusType } from '../../../../../dtos/img.dto';
+import TypeIcon from './typeIcon/TypeIcon';
+
+const FilesTable = (): JSX.Element => {
+  const { images } = useAppSelector((state) => state.images);
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-[25px] max-h-64 overflow-y-scroll">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -28,7 +31,8 @@ const FilesTable = ({ images }: FilesTableProps): JSX.Element => {
         </thead>
         <tbody>
           {images.map((file, i) => {
-            const sizeStr = getSizeStr(file.file.size);
+            console.log('file in file table: ', file);
+            const sizeStr = getSizeStr(file.size);
             const optimizedSizeStr = getSizeStr(file.newSize || 0);
             return (
               <tr
@@ -44,7 +48,7 @@ const FilesTable = ({ images }: FilesTableProps): JSX.Element => {
                   className="flex gap-4 items-center px-6 py-2 font-medium text-dark whitespace-nowrap dark:text-white"
                 >
                   <img
-                    src={file.image.src}
+                    src={file.src}
                     width={20}
                     height={20}
                     alt={file.name}
@@ -53,7 +57,7 @@ const FilesTable = ({ images }: FilesTableProps): JSX.Element => {
                   {file.name > 14 ? file.name.substring(0, 14) + '...' : file.name}
                 </th>
                 <td className="px-6 py-2 whitespace-nowrap dark:text-white">
-                  <TypeIcon type={file.file.type.substring(6, file.file.type.length)} />
+                  <TypeIcon type={file.format} />
                 </td>
                 <td className="px-6 py-2 whitespace-nowrap dark:text-white">{sizeStr}</td>
                 <td className="px-6 py-2 whitespace-nowrap dark:text-white">{optimizedSizeStr}</td>

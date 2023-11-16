@@ -2,31 +2,30 @@ import toast from 'react-hot-toast';
 import { ChangeEvent } from 'react';
 
 import { isFileImage } from '../../../../../utils/processImage';
-import { ImageFileDto } from '../../../../dtos/img.dto';
 import { getImageInfo } from '../../../../../utils/getImageInfo';
-import { ImgFormProps } from './ImgForm.props';
+import { useAppDispatch } from '../../../hooks';
+
+import { addImage, nullImages } from '@renderer/features/images/imagesSlice';
 
 const notifyError = (text: string): unknown => toast.error(text, { duration: 1000 });
 
-const ImgForm = ({ setImages }: ImgFormProps): JSX.Element => {
+const ImgForm = (): JSX.Element => {
+  const dispatch = useAppDispatch();
+
   const onImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setImages([]);
+    dispatch(nullImages());
     if (!e?.target?.files?.length) {
       return;
     }
     const files: FileList = e.target.files;
-    const images: ImageFileDto[] = [];
-    Array.from(files).forEach((file) => {
+    Array.from(files).forEach(async (file) => {
       if (!isFileImage(file)) {
         notifyError('Please select a image');
       } else {
-        const newImage = getImageInfo(file);
-        images.push(newImage);
+        const newImage = await getImageInfo(file);
+        dispatch(addImage(newImage));
       }
     });
-    if (images.length > 0) {
-      setImages(images);
-    }
   };
   return (
     <div className="z-10">

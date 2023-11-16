@@ -2,122 +2,52 @@ import { useCallback, useEffect, useState } from 'react';
 
 import Header from './components/header/Header';
 import Tabs from './components/tabs/Tabs';
-import FilesTable from './components/filesTable/FilesTable';
-import Controls from './components/controls/Controls';
-import Options from './components/options/Options';
-import FilesInfo from './components/filesInfo/FilesInfo';
-import { ImageFileDto, StatusType } from '../../dtos/img.dto';
-import { calcPercentage } from '../../utils/calcSize';
+import FilesTable from './features/images/filesTable/FilesTable';
+import Controls from './features/images/controls/Controls';
+import Options from './features/images/options/Options';
+import FilesInfo from './features/images/filesInfo/FilesInfo';
+import { StatusType, TabStatusType } from '../../dtos/img.dto';
+import { useAppDispatch, useAppSelector } from './hooks';
 
-type TabStatusType = 'files' | 'options';
+import { updateImage } from '@renderer/features/images/imagesSlice';
 
 function App(): JSX.Element {
-  const [images, setImages] = useState<ImageFileDto[]>([]);
-  const [totalSize, setTotalSize] = useState(0);
-  const [totalPercentage, setTotalPercentage] = useState(0);
-  const [optimizedSize, setOptimizedSize] = useState(0);
+  const dispatch = useAppDispatch();
+  const { images, totalSize, optimizedSize, totalPercentage, destPath } = useAppSelector(
+    (state) => state.images
+  );
+  const [isUpdated, setIsUpdated] = useState(false);
   const [tabStatus, setTabStatus] = useState<TabStatusType>('files');
-  const [allOptimized, setAllOptimized] = useState(false);
-  const [destPath, setDestPath] = useState('');
-  const [destNameFolder, setDestNameFolder] = useState('mie');
 
-  const clearImagesList = (): void => setImages([]);
-
-  console.log('Component launched');
-  const getDoneImg = useCallback(() => {
+  const getDoneImg = useCallback((): void => {
     api.on('image:done', (event, res) => {
       const name = res.name;
       const nameIdx = name.lastIndexOf('.');
       const fullName = name.substring(0, nameIdx);
-      setImages((images) => {
-        return images.map((image) => {
-          if (image.file.name.includes(fullName)) {
-            return {
-              ...image,
-              width: res.width,
-              height: res.height,
-              newSize: res.size,
-              newFormat: res.format,
-              status: StatusType.completed,
-            };
-          }
-          return image;
-        });
+
+      images.map((image) => {
+        if (image.originName.substring(0, image.originName.lastIndexOf('.')) === fullName) {
+          const name = image.originName;
+          const data = {
+            newWidth: res.width,
+            newHeight: res.height,
+            newSize: res.size,
+            format: res.format,
+            status: StatusType.completed,
+          };
+          dispatch(updateImage(name, data));
+        }
       });
     });
-  }, [images]);
+  });
 
-  const sendImagesList = (): void => {
-    console.log('send images list');
-    console.log('destpath: ' + destPath);
-
-    images.forEach((image, i) => {
-      const imgPath = image.file.path;
-      console.log('img path: ' + imgPath);
-      console.log('dest path: ' + destPath);
-      api.send('image:resize', {
-        imgPath,
-        dest: destPath,
-        width: 100,
-        height: 100,
-        openDestFolder: i === images.length - 1,
-        status: image.status,
-      });
-    });
-    //setAllOptimized(true);
-  };
-
-  const calcTotalSize = (): void => {
-    let calculatedTotalSize = 0;
-    images.forEach((image) => {
-      calculatedTotalSize += image.file?.size;
-    });
-    setTotalSize(calculatedTotalSize);
-  };
-  const calcOptimizedSize = (): void => {
-    let calculatedOptimizedSize = 0;
-    images.forEach((image) => {
-      calculatedOptimizedSize += image.newSize | 0;
-    });
-    setOptimizedSize(calculatedOptimizedSize);
-  };
-  const calcTotalPercentage = (): void => {
-    if (!optimizedSize) {
-      return;
-    }
-    const percent = calcPercentage(totalSize, optimizedSize);
-    setTotalPercentage(percent);
-  };
-
-  useEffect(() => {
-    if (!images.length) {
-      setAllOptimized(false);
-      return;
-    }
-    calcTotalSize();
-    calcOptimizedSize();
-    calcTotalPercentage();
-    if (!destPath) {
-      console.log('we here');
-      const newDestPath =
-        images[0].file.path.substring(0, images[0].file.path.lastIndexOf('\\') + 1) +
-        destNameFolder;
-      setDestPath(newDestPath);
-    }
-    if (tabStatus !== 'files') {
-      setTabStatus('files');
-    }
-  }, [images]);
   useEffect(() => {
     getDoneImg();
-  }, []);
-  useEffect(() => {
-    console.log('desc Path', destPath);
-  }, [destPath]);
+  }, [isUpdated]);
 
   return (
     <>
-      <Header setImages={setImages} setDestPath={setDestPath} />
+      <Header />
       <div className="px-10">
         {destPath && (
           <>
@@ -126,10 +56,8 @@ function App(): JSX.Element {
           </>
         )}
         <Tabs tabStatus={tabStatus} setTabStatus={setTabStatus} />
-        {images.length > 0 && tabStatus === 'files' && <FilesTable images={images} />}
-        {tabStatus === 'options' && (
-          <Options destNameFolder={destNameFolder} setDestNameFolder={setDestNameFolder} />
-        )}
+        {images.length > 0 && tabStatus === 'files' && <FilesTable />}
+        {tabStatus === 'options' && <Options />}
         {images.length > 0 && tabStatus === 'files' && (
           <>
             <FilesInfo
@@ -138,11 +66,7 @@ function App(): JSX.Element {
               optimizedSize={optimizedSize}
               reductionPercentage={totalPercentage}
             />
-            <Controls
-              clearImagesList={clearImagesList}
-              sendImagesList={sendImagesList}
-              allOptimized={allOptimized}
-            />
+            <Controls setIsUpdated={setIsUpdated} />
           </>
         )}
       </div>

@@ -1,17 +1,17 @@
 import { Toaster } from 'react-hot-toast';
 
 import DarkModeSwitch from './darkModeSwitch/DarkModeSwitch';
-import ImgForm from './imgForm/ImgForm';
-import FolderForm from './folderForm/FolderForm';
+import ImgForm from '../../features/images/imgForm/ImgForm';
+import FolderForm from '../../features/images/folderForm/FolderForm';
 import { HeaderProps } from './Header.props';
 
-const Header = ({ setImages, setDestPath }: HeaderProps): JSX.Element => {
+const Header = (): JSX.Element => {
   return (
     <div className="relative">
       <div className="h-[196px] w-full flex justify-center pt-5 overflow-hidden">
         <Toaster gutter={8} position="bottom-left" />
         <DarkModeSwitch />
-        <ImgForm setImages={setImages} />
+        <ImgForm />
         <span className="absolute left-0 bottom-0">
           <svg
             width="236"
@@ -52,7 +52,7 @@ const Header = ({ setImages, setDestPath }: HeaderProps): JSX.Element => {
         </span>
       </div>
       <div className="flex flex-col">
-        <FolderForm setImages={setImages} setDestPath={setDestPath} />
+        <FolderForm />
       </div>
     </div>
   );

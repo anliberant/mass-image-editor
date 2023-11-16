@@ -1,4 +1,4 @@
-import { getSizeStr } from '../../../../utils/calcSize';
+import { getSizeStr } from '../../../../../utils/calcSize';
 import { FilesInfoProps } from './FilesInfo.props';
 
 const FilesInfo = ({

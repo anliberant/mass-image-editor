@@ -5,18 +5,20 @@ export enum StatusType {
   completed = 'Completed',
 }
 
-export interface ImageFileDto {
+export interface ImageDto {
   name: string;
+  path: string;
   format: string;
-  file: File;
-  image: typeof Image;
   status: StatusType;
   openDestFolder: boolean;
   dirName: string;
-  newSize?: number;
+  newSize: number;
+  size?: number;
+  width?: number;
+  height?: number;
   newWidth?: number;
   newHeight?: number;
-  newFormat: string;
+  newFormat?: string;
 }
 export interface ShortImageDto {
   imgPath: string;

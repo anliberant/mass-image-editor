@@ -17,18 +17,23 @@ const processImage = async (
   format: string,
   dest: string
 ): Promise<sharp.OutputInfo> => {
-  console.log(imgPath, width, height, format, dest);
-
   try {
-    return await sharp(imgPath)
-      // .toFormat(format)
-      // .quality(75)
-      // .resize({
-      //   width,
-      //   height,
+    let buffer = await sharp(imgPath)
+      // .resize(2000, 2000, {
+      //   fit: sharp.fit.inside,
+      //   withoutEnlargement: true,
       // })
-      // .toFormat(format, { mozjpeg: true })
-      .toFile(dest);
+      .toBuffer();
+    return await sharp(buffer).toFile(dest);
+    //return await sharp(imgPath)
+    // .toFormat(format)
+    // .quality(75)
+    // .resize({
+    //   width,
+    //   height,
+    // })
+    // .toFormat(format, { mozjpeg: true })
+    //.toFile(dest);
   } catch (error) {
     console.log(error);
   }

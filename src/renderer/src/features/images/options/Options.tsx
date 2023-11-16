@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { OptionsProps } from './Options.props';
+
+import { useAppSelector } from '../../../hooks';
+import { setDestNameFolder, setIsCreateDestSub } from '@renderer/features/images/imagesSlice';
+//import { OptionsProps } from './Options.props';
 import CheckboxOptions from './checkboxOption/CheckboxOptions';
 
 const defClasses = `w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 
@@ -16,15 +19,13 @@ after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-whit
 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all
 dark:border-gray-500 bg-blue-200`;
 
-const Options = ({ destNameFolder, setDestNameFolder }: OptionsProps): JSX.Element => {
+const Options = (): JSX.Element => {
+  const { destNameFolder, isCreateDestSub } = useAppSelector((state) => state.images);
   const [isOpenFolder, setIsOpenFolder] = useState(true);
-  const [isCheckboxFolderClicked, setIsCheckboxFolderClicked] = useState(false);
-  console.log('isOpenFolder', isOpenFolder);
 
   const toggleOpen = (): void => {
-    console.log('isOpenFolder inside toggleOpen', isOpenFolder);
     api.toggle('isOpenFolder', !isOpenFolder);
-    setIsOpenFolder(() => !isOpenFolder);
+    setIsOpenFolder((isOpenFolder) => !isOpenFolder);
   };
 
   return (
@@ -91,11 +92,11 @@ const Options = ({ destNameFolder, setDestNameFolder }: OptionsProps): JSX.Eleme
         </div>
       </div>
       <CheckboxOptions
-        checkboxValue={isCheckboxFolderClicked}
+        checkboxValue={isCreateDestSub}
         checkboxLabel="Create a subfolder for the result"
         inputValue={destNameFolder}
         setInputValue={setDestNameFolder}
-        setCheckboxValue={setIsCheckboxFolderClicked}
+        setCheckboxValue={setIsCreateDestSub}
       />
     </>
   );

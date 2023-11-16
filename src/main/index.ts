@@ -45,8 +45,6 @@ function createWindow(): void {
   }
 }
 async function optimizeAndResize({ imgPath, width, height, dest }: ShortImageDto): Promise<void> {
-  console.log('optimizeAndResize');
-  console.log('dest', dest);
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
   }
@@ -67,11 +65,6 @@ app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron');
 
   ipcMain.on('image:resize', (_, file: ShortImageDto) => {
-    console.log('image:resize');
-    console.log('file: ' + { ...file });
-    console.dir(file);
-    //file.dest = path.join(file.dirName, 'imageresizer');
-    console.log('file dest: ' + file.dest);
     optimizeAndResize(file);
     isOpenFolderAfterProcess && file.openDestFolder && shell.openPath(file.dest);
   });

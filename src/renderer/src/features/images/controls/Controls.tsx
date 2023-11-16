@@ -1,17 +1,32 @@
+import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { nullImages } from '@renderer/features/images/imagesSlice';
 import { ControlsProps } from './Controls.props';
 
-const Controls = ({
-  clearImagesList,
-  sendImagesList,
-  allOptimized,
-}: ControlsProps): JSX.Element => {
+const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const { images, destPath } = useAppSelector((state) => state.images);
+
+  const sendImagesList = (): void => {
+    images.forEach((image, i) => {
+      const imgPath = image.path;
+      api.send('image:resize', {
+        imgPath,
+        dest: destPath,
+        width: 100,
+        height: 100,
+        openDestFolder: i === images.length - 1,
+        status: image.status,
+      });
+      setIsUpdated(true);
+    });
+  };
   return (
     <div className="w-full flex justify-between mt-[25px]">
       <button
         className="flex items-center py-[10px] px-[12%] bg-red-500 
       dark:bg-white dark:border dark:border-red-500 rounded-xl
       font-medium text-white text-lg hover:bg-red-100 dark:hover:bg-gray-100"
-        onClick={clearImagesList}
+        onClick={(): void => dispatch(nullImages())}
       >
         <svg
           width="24"
@@ -27,31 +42,29 @@ const Controls = ({
         </svg>
         <span className="pl-[10px] dark:text-red-500">Clear list</span>
       </button>
-      {!allOptimized && (
-        <button
-          className="flex items-center py-[10px] px-[12%] bg-blue-200 
+      <button
+        className="flex items-center py-[10px] px-[12%] bg-blue-200 
       dark:bg-white dark:border dark:border-blue-200 rounded-xl
       font-medium text-white text-lg hover:bg-blue-100 dark:hover:bg-gray-100"
-          onClick={sendImagesList}
+        onClick={sendImagesList}
+      >
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 26 26"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            width="26"
-            height="26"
-            viewBox="0 0 26 26"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M7 15.5179V8.48207C7 6.93849 8.67443 5.97675 10.0077 6.75451L16.0385 10.2724C17.3615 11.0442 17.3615 12.9558 16.0385 13.7276L10.0077 17.2455C8.67443 18.0232 7 17.0615 7 15.5179Z"
-              className="stroke-white dark:stroke-blue-200"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <path
+            d="M7 15.5179V8.48207C7 6.93849 8.67443 5.97675 10.0077 6.75451L16.0385 10.2724C17.3615 11.0442 17.3615 12.9558 16.0385 13.7276L10.0077 17.2455C8.67443 18.0232 7 17.0615 7 15.5179Z"
+            className="stroke-white dark:stroke-blue-200"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </svg>
 
-          <span className="pl-[8px] dark:text-blue-200">Optimize</span>
-        </button>
-      )}
+        <span className="pl-[8px] dark:text-blue-200">Optimize</span>
+      </button>
     </div>
   );
 };
