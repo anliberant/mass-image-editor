@@ -1,7 +1,7 @@
 appId: com.electron.app
 productName: mass-image-editor
 directories:
-  buildResources: build
+  buildResources: buildResources
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -13,6 +13,7 @@ asarUnpack:
   - resources/**
 win:
   executableName: mass-image-editor
+  icon: build/icon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

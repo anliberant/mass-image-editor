@@ -1,0 +1,8 @@
+version: 1.0.0
+files:
+  - url: mass-image-editor-1.0.0-setup.exe
+    sha512: FiJEUyxN2XqKoSDgi+FvGH7m7yC8O9WFvm2T4+emMWRMS4CUS40yDz8N+81W+lnzJRwds8cI+RGmkjFA6vfVdA==
+    size: 87264305
+path: mass-image-editor-1.0.0-setup.exe
+sha512: FiJEUyxN2XqKoSDgi+FvGH7m7yC8O9WFvm2T4+emMWRMS4CUS40yDz8N+81W+lnzJRwds8cI+RGmkjFA6vfVdA==
+releaseDate: '2023-11-16T05:41:27.330Z'
