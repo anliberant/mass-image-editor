@@ -1,21 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { StatusType, TabStatusType } from '../../dtos/img.dto';
 import Header from './components/header/Header';
 import Tabs from './components/tabs/Tabs';
-import FilesTable from './features/images/filesTable/FilesTable';
 import Controls from './features/images/controls/Controls';
-import Options from './features/images/options/Options';
 import FilesInfo from './features/images/filesInfo/FilesInfo';
-import { StatusType, TabStatusType } from '../../dtos/img.dto';
+import FilesTable from './features/images/filesTable/FilesTable';
+import Options from './features/images/options/Options';
 import { useAppDispatch, useAppSelector } from './hooks';
 
-import { updateImage } from '@renderer/features/images/imagesSlice';
+import { ImagesState, updateImage } from '@renderer/features/images/imagesSlice';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
-  const { images, totalSize, optimizedSize, totalPercentage, destPath } = useAppSelector(
-    (state) => state.images
-  );
+  const { images, totalSize, optimizedSize, totalPercentage, destPath } =
+    useAppSelector<ImagesState>((state) => state.images);
   const [isUpdated, setIsUpdated] = useState(false);
   const [tabStatus, setTabStatus] = useState<TabStatusType>('files');
 

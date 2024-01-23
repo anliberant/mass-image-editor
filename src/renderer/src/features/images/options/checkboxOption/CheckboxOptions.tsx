@@ -1,5 +1,5 @@
-import { CheckboxOptionsProps } from './CheckboxOptions.props';
 import { useAppDispatch } from '../../../../hooks';
+import { CheckboxOptionsProps } from './CheckboxOptions.props';
 
 const CheckboxOptions = ({
   checkboxValue,
@@ -7,8 +7,10 @@ const CheckboxOptions = ({
   inputValue,
   setInputValue,
   setCheckboxValue,
+  type = 'text',
 }: CheckboxOptionsProps): JSX.Element => {
   const dispatch = useAppDispatch();
+
   return (
     <div className="mt-[25px] flex justify-between">
       <div
@@ -30,8 +32,10 @@ const CheckboxOptions = ({
       </div>
       {checkboxValue && (
         <input
-          type="text"
+          type={type}
           value={inputValue}
+          max="1000"
+          min="0"
           className="block w-[48%] h-[40px] pl-4 pr-4 text-gray-400 border border-gray-300 rounded-lg bg-gray-50 
       focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 
       dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

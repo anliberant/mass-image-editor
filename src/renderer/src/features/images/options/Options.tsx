@@ -1,9 +1,14 @@
 import { useState } from 'react';
 
+import {
+  ImagesState,
+  setDestNameFolder,
+  setIsCreateDestSub,
+} from '@renderer/features/images/imagesSlice';
 import { useAppSelector } from '../../../hooks';
-import { setDestNameFolder, setIsCreateDestSub } from '@renderer/features/images/imagesSlice';
 //import { OptionsProps } from './Options.props';
 import CheckboxOptions from './checkboxOption/CheckboxOptions';
+import ExtendOption from './extendOption/ExtendOption';
 
 const defClasses = `w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 
 peer-focus:ring-blue-100 dark:peer-focus:ring-blue-200 rounded-full peer
@@ -20,7 +25,7 @@ after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:
 dark:border-gray-500 bg-blue-200`;
 
 const Options = (): JSX.Element => {
-  const { destNameFolder, isCreateDestSub } = useAppSelector((state) => state.images);
+  const { destNameFolder, isCreateDestSub } = useAppSelector<ImagesState>((state) => state.images);
   const [isOpenFolder, setIsOpenFolder] = useState(true);
 
   const toggleOpen = (): void => {
@@ -98,6 +103,7 @@ const Options = (): JSX.Element => {
         setInputValue={setDestNameFolder}
         setCheckboxValue={setIsCreateDestSub}
       />
+      <ExtendOption />
     </>
   );
 };

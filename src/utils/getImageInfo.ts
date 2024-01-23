@@ -1,11 +1,11 @@
-import { ImageFileDto, StatusType } from '../dtos/img.dto';
+import { ImageDto, StatusType } from '../dtos/img.dto';
 
-export async function getImageInfo(file: File): Promise<Partial<ImageFileDto>> {
+export async function getImageInfo(file: File): Promise<Partial<ImageDto>> {
   const image = new Image();
   image.src = URL.createObjectURL(file);
-  return new Promise<Partial<ImageFileDto>>((resolve) => {
+  return new Promise<Partial<ImageDto>>((resolve) => {
     image.onload = function (): void {
-      const newImage: Partial<ImageFileDto> = {
+      const newImage: Partial<ImageDto> = {
         name: file.name.substring(0, file.name.lastIndexOf('.')),
         originName: file.name,
         format: file.type.substring(6, file.type.length),
@@ -18,6 +18,8 @@ export async function getImageInfo(file: File): Promise<Partial<ImageFileDto>> {
         src: image.src,
         path: file.path,
         openDestFolder: false,
+        fit: 'inside',
+        isTrim: false,
       };
       resolve(newImage);
     };

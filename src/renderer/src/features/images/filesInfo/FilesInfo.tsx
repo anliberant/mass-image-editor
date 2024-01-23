@@ -9,6 +9,7 @@ const FilesInfo = ({
 }: FilesInfoProps): JSX.Element => {
   const size = getSizeStr(totalSize);
   const optSize = getSizeStr(optimizedSize);
+
   return (
     <div className="mt-[25px] w-full flex justify-between font-inter">
       <div className="info-badge info-badge__first">

@@ -1,10 +1,11 @@
 import { useAppSelector } from '../../../hooks';
 
-import { getSizeStr } from '../../../../../utils/calcSize';
+import { ImagesState } from '../imagesSlice';
 import TableRow from './tableRow/TableRow';
+import TotalRow from './totalRow/TotalRow';
 
 const FilesTable = (): JSX.Element => {
-  const { images } = useAppSelector((state) => state.images);
+  const { images } = useAppSelector<ImagesState>((state) => state.images);
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-[25px] max-h-64 overflow-y-scroll">
@@ -18,10 +19,19 @@ const FilesTable = (): JSX.Element => {
               Type
             </th>
             <th scope="col" className="px-6 py-3">
-              Original size
+              Size
             </th>
             <th scope="col" className="px-6 py-3">
-              Optimized size
+              Width
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Height
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Fit
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Trim
             </th>
             <th scope="col" className="px-6 py-3">
               Status
@@ -30,21 +40,10 @@ const FilesTable = (): JSX.Element => {
         </thead>
         <tbody>
           {images.map((file, i) => {
-            const sizeStr = getSizeStr(file.size);
-            const optimizedSizeStr = getSizeStr(file.newSize);
-            return (
-              <TableRow
-                key={file.name + i}
-                name={file.name}
-                i={i}
-                src={file.src}
-                sizeStr={sizeStr}
-                optimizedSize={optimizedSizeStr}
-                format={file.format}
-                status={file.status}
-              />
-            );
+            console.log(file);
+            return <TableRow key={file.name + i} originName={file.originName} i={i} />;
           })}
+          {images.length > 1 && <TotalRow />}
         </tbody>
       </table>
     </div>

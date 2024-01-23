@@ -1,12 +1,12 @@
-import { app, shell, BrowserWindow, ipcMain, Tray, nativeImage } from 'electron';
-import { electronApp, optimizer, is } from '@electron-toolkit/utils';
+import { electronApp, is, optimizer } from '@electron-toolkit/utils';
+import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell } from 'electron';
 
 import path, { join } from 'path';
 
-import icon from '../../resources/icon.png?asset';
-import { processImage } from '../utils/processImage';
-import { ShortImageDto } from '../dtos/img.dto';
 import * as fs from 'fs';
+import icon from '../../resources/icon.png?asset';
+import { ExtendDto, ShortImageDto } from '../dtos/img.dto';
+import { processImage } from '../utils/processImage';
 
 const isDev = process.env.NODE_ENV !== 'production';
 // const isMac = process.platform === 'darwin';
@@ -44,13 +44,46 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
 }
-async function optimizeAndResize({ imgPath, width, height, dest }: ShortImageDto): Promise<void> {
+async function optimizeAndResize({
+  imgPath,
+  width,
+  height,
+  dest,
+  fit,
+  // isExtend,
+  // isLeftExtend,
+  // isRightExtend,
+  // isTopExtend,
+  // isBottomExtend,
+  leftExtend,
+  rightExtend,
+  topExtend,
+  bottomExtend,
+  extendColor,
+}: ShortImageDto & ExtendDto): Promise<void> {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
   }
   try {
     const fileName = path.basename(imgPath);
-    await processImage(imgPath, width, height, 'jpeg', dest + '\\' + fileName).then((res) => {
+    await processImage(
+      imgPath,
+      width,
+      height,
+      'jpeg',
+      dest + '\\' + fileName,
+      fit,
+      // isExtend,
+      // isLeftExtend,
+      // isRightExtend,
+      // isTopExtend,
+      // isBottomExtend,
+      leftExtend,
+      rightExtend,
+      topExtend,
+      bottomExtend,
+      extendColor
+    ).then((res) => {
       const file = { ...res, name: fileName, imgPath };
       mainWindow.webContents.send('image:done', file);
     });
@@ -68,7 +101,7 @@ app.whenReady().then(() => {
     mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
   });
 
-  ipcMain.on('image:resize', (_, file: ShortImageDto) => {
+  ipcMain.on('image:resize', (_, file: ShortImageDto & ExtendDto) => {
     optimizeAndResize(file);
     isOpenFolderAfterProcess && file.openDestFolder && shell.openPath(file.dest);
   });

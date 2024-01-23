@@ -7,4 +7,5 @@ export interface CheckboxOptionsProps
   inputValue: string;
   setInputValue: (value: string) => void;
   setCheckboxValue: (value: boolean) => void;
+  type: 'text' | 'number';
 }

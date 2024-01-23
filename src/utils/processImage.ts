@@ -1,6 +1,5 @@
 /* eslint-disable */
 const sharp = require('sharp');
-import fs from 'fs';
 
 sharp.cache(false);
 
@@ -15,14 +14,32 @@ const processImage = async (
   width: number,
   height: number,
   format: string,
-  dest: string
+  dest: string,
+  fit: string,
+  // isExtend: boolean,
+  // isLeftExtend: boolean,
+  // isRightExtend: boolean,
+  // isTopExtend: boolean,
+  // isBottomExtend: boolean,
+  leftExtend: number,
+  rightExtend: number,
+  topExtend: number,
+  bottomExtend: number,
+  extendColor: string
 ): Promise<sharp.OutputInfo> => {
   try {
     let buffer = await sharp(imgPath)
-      // .resize(2000, 2000, {
-      //   fit: sharp.fit.inside,
-      //   withoutEnlargement: true,
-      // })
+      .resize(width, height, {
+        fit: sharp.fit[fit],
+        withoutEnlargement: true,
+      })
+      .extend({
+        top: topExtend || 0,
+        bottom: bottomExtend || 0,
+        left: leftExtend || 0,
+        right: rightExtend || 0,
+        background: extendColor,
+      })
       .toBuffer();
     return await sharp(buffer).toFile(dest);
     //return await sharp(imgPath)
@@ -39,4 +56,4 @@ const processImage = async (
   }
 };
 
-export { processImage, isFileImage };
+export { isFileImage, processImage };

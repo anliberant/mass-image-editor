@@ -1,10 +1,23 @@
+import { ImagesState, nullImages } from '@renderer/features/images/imagesSlice';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { nullImages } from '@renderer/features/images/imagesSlice';
 import { ControlsProps } from './Controls.props';
 
 const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { images, destPath } = useAppSelector((state) => state.images);
+  const {
+    images,
+    destPath,
+    // isExtend,
+    // isLeftExtend,
+    // isRightExtend,
+    // isTopExtend,
+    // isBottomExtend,
+    leftExtend,
+    rightExtend,
+    topExtend,
+    bottomExtend,
+    extendColor,
+  } = useAppSelector<ImagesState>((state) => state.images);
 
   const sendImagesList = (): void => {
     images.forEach((image, i) => {
@@ -12,10 +25,22 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
       api.send('image:resize', {
         imgPath,
         dest: destPath,
-        width: 100,
-        height: 100,
+        width: image.newWidth && image.newWidth !== image.width ? image.newWidth : image.width,
+        height:
+          image.newHeight && image.newHeight !== image.height ? image.newHeight : image.height,
         openDestFolder: i === images.length - 1,
         status: image.status,
+        fit: image.fit,
+        // isExtend,
+        // isLeftExtend,
+        // isRightExtend,
+        // isTopExtend,
+        // isBottomExtend,
+        leftExtend,
+        rightExtend,
+        topExtend,
+        bottomExtend,
+        extendColor,
       });
       setIsUpdated(true);
     });
