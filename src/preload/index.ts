@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import * as fs from 'fs';
 import os from 'os';
 import { dirname, join } from 'path';
-import { ImageDto, ImgNotifyDto } from '../dtos/img.dto';
+import { ImageDto, ImgNotifyDto } from '../shared/dtos/img.dto';
 
 const api = {
   homedir: (): string => os.homedir(),
@@ -17,6 +17,12 @@ const api = {
   readdirS: async (path: string): Promise<fs.Dirent[]> =>
     await fs.readdirSync(path, { encoding: 'utf-8', withFileTypes: true }),
   readFileS: async (path: string): Promise<Buffer> => await fs.readFileSync(path),
+  createRStream: async (path: string): fs.ReadStream => {
+    await fs.createReadStream(path);
+  },
+  createWStream: async (dest: string): fs.WriteStream => {
+    await fs.createWriteStream(dest);
+  },
   on: (channel: string, callback: (...args) => void): unknown =>
     ipcRenderer.on(channel, (event, ...args) => callback(event, ...args)),
   once: (channel: string, callback: (...args) => void): unknown =>

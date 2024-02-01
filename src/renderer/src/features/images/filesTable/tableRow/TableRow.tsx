@@ -1,8 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
+import { ImageDto, StatusType } from '@shared/dtos/img.dto';
+import { FormatTypes } from '@shared/types/formats.type';
+import { getSizeStr } from '@shared/utils/calcSize';
 import { ChangeEvent, useState } from 'react';
-import { ImageDto, StatusType } from '../../../../../../dtos/img.dto';
-import { getSizeStr } from '../../../../../../utils/calcSize';
-import { ImagesState, updateImage } from '../../imagesSlice';
+import { ImagesState, updateImage } from '../../store/imagesSlice';
 import TypeIcon from '../typeIcon/TypeIcon';
 import { TableProps } from './TableRow.props';
 
@@ -20,6 +21,7 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
     width,
     height,
     isTrim,
+    trimColor,
     fit,
     newSize,
     newWidth,
@@ -53,6 +55,10 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
     dispatch(updateImage(originName, { newHeight: +e.target.value }));
   };
 
+  const updateImageFormat = (newFormat: string): void => {
+    dispatch(updateImage(originName, { newFormat }));
+  };
+
   return (
     <tr
       className={`align-super ${
@@ -63,15 +69,15 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
     >
       <th
         scope="row"
-        className="flex gap-4 items-center sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap font-medium text-darkdark:text-white align-super"
+        className="flex gap-4 items-center text-center sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap font-medium text-darkdark:text-white align-super"
       >
         <img src={src} width={20} height={20} alt={name} className="rounded-sm" />
         {name > 14 ? name.substring(0, 14) + '...' : name}
       </th>
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  dark:text-white">
+      <td className="table__row">
         <TypeIcon type={format} />
       </td>
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  dark:text-white flex justify-between">
+      <td className="table__row flex justify-between">
         {sizeStr}
         {optimizedSizeStr && <span>{'=>'}</span>}
         {optimizedSizeStr && (
@@ -80,7 +86,7 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           </span>
         )}
       </td>
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  dark:text-white">
+      <td className="table__row">
         <input
           type="number"
           value={newWidth || newWidthVal}
@@ -91,7 +97,7 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           placeholder="90210"
         />
       </td>
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  dark:text-white">
+      <td className="table__row">
         <input
           type="number"
           value={newHeight ? newHeight : newHeightVal}
@@ -102,9 +108,9 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           placeholder="90210"
         />
       </td>
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  dark:text-white">
+      <td className="table__row">
         <select
-          className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500
+          className="text-center border border-gray-300 text-sm rounded-lg focus:ring-blue-500
              focus:border-blue-500 block w-full p-1.5 dark:bg-gray-500 dark:border-gray-600 
              dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           onChange={(e: ChangeEvent<HTMLSelectElement>): void => fitChange(e)}
@@ -119,8 +125,27 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           <option value="outside">outside</option>
         </select>
       </td>
+      <td className="table__row">
+        <select
+          className="text-center border border-gray-300 text-sm rounded-lg focus:ring-blue-500
+             focus:border-blue-500 block w-full p-1.5 dark:bg-gray-500 dark:border-gray-600 
+             dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          onChange={(e: ChangeEvent<HTMLSelectElement>): void => updateImageFormat(e.target.value)}
+          value={image.newFormat || image.format}
+        >
+          <option value={FormatTypes.JPEG}>jpeg</option>
+          <option value={FormatTypes.PNG}>png</option>
+          <option value={FormatTypes.WEBP}>webp</option>
+          <option value={FormatTypes.JP2}>jp2</option>
+          <option value={FormatTypes.TIFF}>tiff</option>
+          <option value={FormatTypes.AVIF}>avif</option>
+          <option value={FormatTypes.HEIF}>heif</option>
+          <option value={FormatTypes.JXL}>jxl</option>
+          <option value={FormatTypes.RAW}>raw</option>
+        </select>
+      </td>
       <td
-        className={`sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap ${
+        className={`flex gap-4 items-center justify-center table__row ${
           status === StatusType.completed ? 'text-green dark:text-green' : ''
         }`}
       >
@@ -132,9 +157,19 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
              focus:ring-2 dark:bg-gray-500"
           onChange={setIsTrim}
         />
+        {isTrim && (
+          <input
+            type="color"
+            value={trimColor}
+            className="block w-6 h-6"
+            onChange={(e: InputEvent): void =>
+              dispatch(updateImage(originName, { trimColor: e.target.value }))
+            }
+          />
+        )}
       </td>
       <td
-        className={`sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  ${
+        className={`table__row ${
           status === StatusType.completed ? 'text-green dark:text-green' : ''
         }`}
       >

@@ -1,6 +1,6 @@
 import { DetailedHTMLProps, DivHTMLAttributes } from 'react';
 
-import { TabStatusType } from '../../../../dtos/img.dto';
+import { TabStatusType } from '../../../../shared/dtos/img.dto';
 
 export interface TabsProps
   extends DetailedHTMLProps<DivHTMLAttributes<HTMLDivElement>, HTMLDivElement> {

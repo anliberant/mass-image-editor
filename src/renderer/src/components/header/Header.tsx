@@ -1,15 +1,11 @@
-import { Toaster } from 'react-hot-toast';
-
-import DarkModeSwitch from './darkModeSwitch/DarkModeSwitch';
-import ImgForm from '../../features/images/imgForm/ImgForm';
 import FolderForm from '../../features/images/folderForm/FolderForm';
-import { HeaderProps } from './Header.props';
+import ImgForm from '../../features/images/imgForm/ImgForm';
+import DarkModeSwitch from './darkModeSwitch/DarkModeSwitch';
 
 const Header = (): JSX.Element => {
   return (
     <div className="relative">
       <div className="h-[196px] w-full flex justify-center pt-5 overflow-hidden">
-        <Toaster gutter={8} position="bottom-left" />
         <DarkModeSwitch />
         <ImgForm />
         <span className="absolute left-0 bottom-0">

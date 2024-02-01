@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { StatusType, TabStatusType } from '../../dtos/img.dto';
+import { StatusType, TabStatusType } from '../../shared/dtos/img.dto';
 import Header from './components/header/Header';
 import Tabs from './components/tabs/Tabs';
 import Controls from './features/images/controls/Controls';
 import FilesInfo from './features/images/filesInfo/FilesInfo';
 import FilesTable from './features/images/filesTable/FilesTable';
-import Options from './features/images/options/Options';
+import Options from './features/options/Options';
 import { useAppDispatch, useAppSelector } from './hooks';
 
-import { ImagesState, updateImage } from '@renderer/features/images/imagesSlice';
+import { ImagesState, updateImage } from '@renderer/features/images/store/imagesSlice';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -47,7 +47,7 @@ function App(): JSX.Element {
   return (
     <>
       <Header />
-      <div className="px-10">
+      <div className="px-10 min-h-[40vh]">
         {destPath && (
           <>
             <span>Destination:</span>

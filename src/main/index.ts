@@ -5,8 +5,10 @@ import path, { join } from 'path';
 
 import * as fs from 'fs';
 import icon from '../../resources/icon.png?asset';
-import { ExtendDto, ShortImageDto } from '../dtos/img.dto';
-import { processImage } from '../utils/processImage';
+import { ImageWithOptions } from '../shared/dtos/img.dto';
+import { IS_OPEN_FOLDER, PROCESS_IMAGE } from './../shared/constants/events.constants';
+const sharp = require('sharp');
+//import { processImage } from './processImage';
 
 const isDev = process.env.NODE_ENV !== 'production';
 // const isMac = process.platform === 'darwin';
@@ -50,46 +52,293 @@ async function optimizeAndResize({
   height,
   dest,
   fit,
-  // isExtend,
-  // isLeftExtend,
-  // isRightExtend,
-  // isTopExtend,
-  // isBottomExtend,
+  isExtend,
   leftExtend,
   rightExtend,
   topExtend,
   bottomExtend,
   extendColor,
-}: ShortImageDto & ExtendDto): Promise<void> {
+  isExtract,
+  leftExtract,
+  topExtract,
+  widthExtract,
+  heightExtract,
+  isTrim,
+  trimColor,
+  rotate,
+  rotateBg,
+  isFlip,
+  isFlop,
+  isAffine,
+  affineA,
+  affineB,
+  affineC,
+  affineD,
+  isMedian,
+  medianSize,
+  isBlur,
+  blurSigma,
+  isFlatten,
+  flattenBg,
+  isUnflatten,
+  isGamma,
+  gammaVal,
+  gammaOut,
+  isNegate,
+  negateAlpha,
+  isNormalize,
+  normalizeLower,
+  normalizeUpper,
+  isClahe,
+  claheWidth,
+  claheHeight,
+  claheMaxSlope,
+  newWidth,
+  newHeight,
+  isConvolve,
+  isThreshold,
+  thresholdVal,
+  thresholdGreyscale,
+  thresholdGrayscale,
+  isModulate,
+  modulateBrightness,
+  modulateSaturation,
+  modulateHue,
+  modulateLightness,
+  isSharpen,
+  sharpenSigma,
+  sharpenM1,
+  sharpenM2,
+  sharpenX1,
+  sharpenY2,
+  sharpenY3,
+}: ImageWithOptions): Promise<void> {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
   }
-  try {
-    const fileName = path.basename(imgPath);
-    await processImage(
-      imgPath,
-      width,
-      height,
-      'jpeg',
-      dest + '\\' + fileName,
-      fit,
-      // isExtend,
-      // isLeftExtend,
-      // isRightExtend,
-      // isTopExtend,
-      // isBottomExtend,
-      leftExtend,
-      rightExtend,
-      topExtend,
-      bottomExtend,
-      extendColor
-    ).then((res) => {
-      const file = { ...res, name: fileName, imgPath };
+  const affineArray = [
+    [affineA, affineB],
+    [affineC, affineD],
+  ];
+  const resize = newWidth !== width || newHeight !== height;
+  const fileName = path.basename(imgPath);
+
+  let readableStream = fs.createReadStream(imgPath);
+  //const writeableStream = fs.createWriteStream(dest);
+
+  const rotatePipeline = sharp().rotate(rotate, {
+    background: rotateBg,
+  });
+  const extendPipeline = sharp().extend({
+    top: topExtend || 0,
+    bottom: bottomExtend || 0,
+    left: leftExtend || 0,
+    right: rightExtend || 0,
+    background: extendColor,
+  });
+  const trimPipeline = sharp().trim({
+    background: trimColor,
+    threshold: 0,
+    lineArt: true,
+  });
+  const resizedPipeline = sharp().resize(newWidth || width, newHeight || height, {
+    fit: sharp.fit[fit],
+    withoutEnlargement: true,
+  });
+  const flipPipeline = sharp().flip(isFlip);
+  const flopPipeline = sharp().flop(isFlop);
+  const affinePipeline = sharp().affine(affineArray, {
+    background: 'white',
+    interpolator: sharp.interpolators.nohalo,
+  });
+  const extractPipeline = sharp().extract({
+    left: leftExtract || 0,
+    top: topExtract || 0,
+    width: widthExtract || 0,
+    height: heightExtract || 0,
+  });
+  const medianPipeline = sharp().median(medianSize);
+  const convolvePipeline = sharp().convolve({
+    width: 3,
+    height: 3,
+    kernel: [-1, 0, 1, -2, 0, 2, -1, 0, 1],
+    scale: 1,
+  });
+  const blurPipeline = sharp().blur();
+  const blurWithSigmaPipeline = sharp().blur(blurSigma);
+  const flattenPipeline = sharp().flatten({ background: flattenBg });
+  const unFlattenPipeline = sharp().unflatten();
+  const gammaPipeline = sharp().gamma(gammaVal, gammaOut);
+  const negatePipeline = sharp().negate({ alpha: negateAlpha });
+  const normalizePipeline = sharp().normalize({ lower: normalizeLower, upper: normalizeUpper });
+  const thresholdPipeline = sharp().threshold(thresholdVal, {
+    greyscale: thresholdGreyscale,
+    grayscale: thresholdGrayscale,
+  });
+  const modulatePipeline = sharp().modulate({
+    brightness: modulateBrightness,
+    saturation: modulateSaturation,
+    lightness: modulateLightness,
+    hue: modulateHue,
+  });
+
+  const writePipeline = sharp({ failOnError: false }).toFile(
+    dest + '\\' + fileName,
+    (err, info) => {
+      const file = { ...info, name: fileName, imgPath };
       mainWindow.webContents.send('image:done', file);
-    });
-  } catch (error) {
-    throw new Error(error.message);
+    }
+  );
+
+  if (rotate) {
+    readableStream = readableStream.pipe(rotatePipeline);
   }
+  if (resize) {
+    readableStream = readableStream.pipe(resizedPipeline);
+  }
+  if (isExtend) {
+    readableStream = readableStream.pipe(extendPipeline);
+  }
+  if (isExtract) {
+    readableStream = readableStream.pipe(extractPipeline);
+  }
+  if (isFlip) {
+    readableStream = readableStream.pipe(flipPipeline);
+  }
+  if (isFlop) {
+    readableStream = readableStream.pipe(flopPipeline);
+  }
+  if (isAffine) {
+    readableStream = readableStream.pipe(affinePipeline);
+  }
+  if (isMedian) {
+    readableStream = readableStream.pipe(medianPipeline);
+  }
+  if (isConvolve) {
+    readableStream = readableStream.pipe(convolvePipeline);
+  }
+  if (isBlur) {
+    if (blurSigma !== 0.3) {
+      readableStream = readableStream.pipe(blurWithSigmaPipeline);
+    } else {
+      readableStream = readableStream.pipe(blurPipeline);
+    }
+  }
+  if (isFlatten) {
+    readableStream = readableStream.pipe(flattenPipeline);
+  }
+  if (isUnflatten) {
+    readableStream = readableStream.pipe(unFlattenPipeline);
+  }
+  if (isGamma) {
+    readableStream = readableStream.pipe(gammaPipeline);
+  }
+  if (isNegate) {
+    readableStream = readableStream.pipe(negatePipeline);
+  }
+  if (isNormalize) {
+    readableStream = readableStream.pipe(normalizePipeline);
+  }
+  if (isClahe && claheWidth && claheHeight) {
+    readableStream = readableStream.pipe(
+      sharp().clahe({
+        width: claheWidth,
+        height: claheHeight,
+        maxSlape: claheMaxSlope,
+      })
+    );
+  }
+  if (isThreshold) {
+    readableStream = readableStream.pipe(thresholdPipeline);
+  }
+  if (isModulate) {
+    readableStream = readableStream.pipe(modulatePipeline);
+  }
+  if (isSharpen) {
+    readableStream = readableStream.pipe(
+      sharp().sharpen({
+        sigma: sharpenSigma,
+        m1: sharpenM1,
+        m2: sharpenM2,
+        x1: sharpenX1,
+        y2: sharpenY2,
+        y3: sharpenY3,
+      })
+    );
+  }
+
+  // readableStream.pipe(writePipeline).on('finish', () => {
+  //   console.log('done');
+  // });
+  // try {
+  //   const fileName = path.basename(imgPath);
+  //   await processImage(
+  //     imgPath,
+  //     width,
+  //     height,
+  //     'jpeg',
+  //     dest + '\\' + fileName,
+  //     fit,
+  //     isExtend,
+  //     leftExtend,
+  //     rightExtend,
+  //     topExtend,
+  //     bottomExtend,
+  //     extendColor,
+  //     isExtract,
+  //     leftExtract,
+  //     topExtract,
+  //     widthExtract,
+  //     heightExtract,
+  //     isTrim,
+  //     trimColor,
+  //     rotate,
+  //     rotateBg,
+  //     isFlip,
+  //     isFlop,
+  //     isAffine,
+  //     affineA,
+  //     affineB,
+  //     affineC,
+  //     affineD,
+  //     isMedian,
+  //     medianSize,
+  //     isBlur,
+  //     blurSigma,
+  //     isFlatten,
+  //     flattenBg,
+  //     isUnflatten,
+  //     isGamma,
+  //     gammaOut,
+  //     isNegate,
+  //     negateAlpha,
+  //     isNormalize,
+  //     normalizeLower,
+  //     normalizeUpper,
+  //     isClahe,
+  //     claheWidth,
+  //     claheHeight,
+  //     claheMaxSlope,
+  //     newWidth,
+  //     newHeight,
+  //     isConvolve,
+  //     isThreshold,
+  //     thresholdVal,
+  //     thresholdGreyscale,
+  //     thresholdGrayscale,
+  //     isModulate,
+  //     modulateBrightness,
+  //     modulateSaturation,
+  //     modulateHue,
+  //     modulateLightness
+  //   ).then((res) => {
+  //     console.log('res: ' + JSON.stringify(res));
+  //     const file = { ...res, name: fileName, imgPath };
+  //     mainWindow.webContents.send('image:done', file);
+  //   });
+  // } catch (error) {
+  //   throw new Error(error.message);
+  // }
 }
 
 app.whenReady().then(() => {
@@ -101,11 +350,11 @@ app.whenReady().then(() => {
     mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
   });
 
-  ipcMain.on('image:resize', (_, file: ShortImageDto & ExtendDto) => {
+  ipcMain.on(PROCESS_IMAGE, (_, file: ImageWithOptions) => {
     optimizeAndResize(file);
     isOpenFolderAfterProcess && file.openDestFolder && shell.openPath(file.dest);
   });
-  ipcMain.on('isOpenFolder', (_, toggleBool: boolean) => {
+  ipcMain.on(IS_OPEN_FOLDER, (_, toggleBool: boolean) => {
     isOpenFolderAfterProcess = toggleBool;
   });
 

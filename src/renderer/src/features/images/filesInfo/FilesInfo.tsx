@@ -1,4 +1,4 @@
-import { getSizeStr } from '../../../../../utils/calcSize';
+import { getSizeStr } from '@shared/utils/calcSize';
 import { FilesInfoProps } from './FilesInfo.props';
 
 const FilesInfo = ({
@@ -26,7 +26,11 @@ const FilesInfo = ({
       </div>
       <div className="info-badge info-badge__last">
         <span className="font-medium">Reduction:</span>
-        <span className={`font-bold text-xl text-green`}>{reductionPercentage + '%'}</span>
+        <span
+          className={`font-bold text-xl ${reductionPercentage > 0 ? 'text-green' : 'text-red-950'}`}
+        >
+          {reductionPercentage + '%'}
+        </span>
       </div>
     </div>
   );

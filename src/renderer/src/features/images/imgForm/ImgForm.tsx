@@ -1,13 +1,11 @@
-import toast from 'react-hot-toast';
 import { ChangeEvent } from 'react';
 
-import { isFileImage } from '../../../../../utils/processImage';
-import { getImageInfo } from '../../../../../utils/getImageInfo';
+import { getImageInfo } from '@shared/utils/getImageInfo';
+import { isFileImage } from '@shared/utils/processImage';
 import { useAppDispatch } from '../../../hooks';
 
-import { addImage, nullImages } from '@renderer/features/images/imagesSlice';
-
-const notifyError = (text: string): unknown => toast.error(text, { duration: 1000 });
+import { addImage, nullImages } from '@renderer/features/images/store/imagesSlice';
+import { notifyError } from '@shared/toasts/NotifyError';
 
 const ImgForm = (): JSX.Element => {
   const dispatch = useAppDispatch();

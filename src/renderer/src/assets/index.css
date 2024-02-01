@@ -13,3 +13,8 @@
 .info-badge__last {
     border-radius: 0px 12px 12px 0px;
 }
+
+.table__row {
+    @apply sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  dark:text-white;
+    text-align: -webkit-center;
+}

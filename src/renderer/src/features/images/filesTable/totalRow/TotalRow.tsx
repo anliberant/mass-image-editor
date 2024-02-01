@@ -1,41 +1,33 @@
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
+import { ImageDto } from '@shared/dtos/img.dto';
+import { FormatTypes } from '@shared/types/formats.type';
+import { IImages } from '@shared/types/images.type';
+import { getSizeStr } from '@shared/utils/calcSize';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { ImageDto } from 'src/dtos/img.dto';
-import { getSizeStr } from '../../../../../../utils/calcSize';
-import { ImagesState, updateImage } from '../../imagesSlice';
+import { updateImage } from '../../store/imagesSlice';
 
 const TotalRow = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { images, totalSize, optimizedSize, maxWidth, maxHeight } = useAppSelector<ImagesState>(
+  const { images, totalSize, optimizedSize, maxWidth, maxHeight } = useAppSelector<IImages>(
     (store) => store.images
   );
 
   const [trimAllChecked, setTrimAllChecked] = useState(false);
   const [allResize, setAllResize] = useState('100%');
-
-  // let maxWidth;
-  // let maxHeight;
-  // images.map((image) => {
-  //   if (image.width > maxWidth) {
-  //     maxWidth = image.width;
-  //   }
-  //   if (image.height > maxHeight) {
-  //     maxHeight = image.height;
-  //   }
-  // });
-
-  console.log('max width: ' + maxWidth);
-  console.log('max height: ' + maxHeight);
-
+  const [trimAllColor, setTrimAllColor] = useState('#ffffff');
   const [allWidth, setAllWidth] = useState(maxWidth);
   const [allHeight, setAllHeight] = useState(maxHeight);
-  console.log('allWidth: ' + allWidth);
-  console.log('allHeight: ' + allHeight);
 
   const fitChangeToAll = (e: ChangeEvent<HTMLSelectElement>): void => {
     e.preventDefault();
     images.forEach((img: ImageDto) => {
       dispatch(updateImage(img.originName, { fit: e.target.value }));
+    });
+  };
+
+  const updateImageFormatToAll = (newFormat: string): void => {
+    images.forEach((img: ImageDto) => {
+      dispatch(updateImage(img.originName, { newFormat }));
     });
   };
 
@@ -58,6 +50,13 @@ const TotalRow = (): JSX.Element => {
       dispatch(updateImage(image.originName, { isTrim: !trimAllChecked }));
     });
     setTrimAllChecked((trimAllChecked) => !trimAllChecked);
+  };
+
+  const setAllTrimColor = (e: InputEvent): void => {
+    setTrimAllColor(e.target.value);
+    images.forEach((image: ImageDto) => {
+      dispatch(updateImage(image.originName, { trimColor: e.target.value }));
+    });
   };
 
   const setNewWidthToAll = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -113,16 +112,18 @@ const TotalRow = (): JSX.Element => {
   }, [maxWidth, maxHeight]);
 
   return (
-    <tr className={`${'border-b bg-gray-150 dark:bg-gray-500 dark:border-gray-500'}`}>
+    <tr
+      className={`${'border-b bg-gray-150 dark:bg-gray-500 dark:border-gray-500'} align-baseline`}
+    >
       <th
         scope="row"
-        className="flex gap-4 items-center sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  font-medium text-darkdark:text-white"
+        className="flex gap-4 items-center text-center sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  font-medium text-dark dark:text-white"
       >
         Total {images.length} images
       </th>
-      <td className="hidden md:table-cell sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap dark:text-white"></td>
+      <td className="md:table-cell table__row"></td>
 
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap  dark:text-white flex justify-between">
+      <td className="table__row flex justify-between">
         {totalSizeStr}
         {optSizeStr && <span>{'=>'}</span>}
         {optSizeStr && (
@@ -131,7 +132,7 @@ const TotalRow = (): JSX.Element => {
           </span>
         )}
       </td>
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap dark:text-white">
+      <td className="table__row">
         <input
           type="number"
           value={allWidth}
@@ -142,7 +143,7 @@ const TotalRow = (): JSX.Element => {
           placeholder="Set new Width"
         />
       </td>
-      <td className="sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap dark:text-white">
+      <td className="table__row">
         <input
           type="number"
           value={allHeight}
@@ -154,9 +155,9 @@ const TotalRow = (): JSX.Element => {
         />
       </td>
 
-      <td className={`sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap`}>
+      <td className={`table__row`}>
         <select
-          className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500
+          className="text-center border border-gray-300 text-sm rounded-lg focus:ring-blue-500
              focus:border-blue-500 block w-full p-1.5 dark:bg-gray-500 dark:border-gray-600 
              dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           onChange={(e: ChangeEvent<HTMLSelectElement>): void => fitChangeToAll(e)}
@@ -170,17 +171,46 @@ const TotalRow = (): JSX.Element => {
           <option value="outside">outside</option>
         </select>
       </td>
-      <td className={`sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap`}>
+      <td className="table__row">
+        <select
+          className="text-center border border-gray-300 text-sm rounded-lg focus:ring-blue-500
+             focus:border-blue-500 block w-full p-1.5 dark:bg-gray-500 dark:border-gray-600 
+             dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          onChange={(e: ChangeEvent<HTMLSelectElement>): void =>
+            updateImageFormatToAll(e.target.value)
+          }
+        >
+          <option value={FormatTypes.JPEG}>jpeg</option>
+          <option value={FormatTypes.PNG}>png</option>
+          <option value={FormatTypes.WEBP}>webp</option>
+          <option value={FormatTypes.JP2}>jp2</option>
+          <option value={FormatTypes.TIFF}>tiff</option>
+          <option value={FormatTypes.AVIF}>avif</option>
+          <option value={FormatTypes.HEIF}>heif</option>
+          <option value={FormatTypes.JXL}>jxl</option>
+          <option value={FormatTypes.RAW}>raw</option>
+        </select>
+      </td>
+      <td className={`flex gap-4 items-center justify-center table__row `}>
         <input
           type="checkbox"
-          checked={trimAllChecked || false}
+          checked={trimAllChecked}
           className="w-4 h-4 text-blue-600 bg-gray-100
              border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 
              focus:ring-2 dark:bg-gray-500"
           onChange={setAllToTrim}
         />
+        {trimAllChecked && (
+          <input
+            type="color"
+            value={trimAllColor}
+            className="block w-6 h-6"
+            onChange={(e: InputEvent): void => setAllTrimColor(e)}
+          />
+        )}
       </td>
-      <td className="hidden md:table-cell sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap dark:text-white"></td>
+
+      <td className="md:table-cell table__row"></td>
     </tr>
   );
 };

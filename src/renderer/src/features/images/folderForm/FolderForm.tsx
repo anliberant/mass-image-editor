@@ -1,15 +1,13 @@
 import { ChangeEvent } from 'react';
-import toast from 'react-hot-toast';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 
+import { getImageInfo } from '@shared/utils/getImageInfo';
+import { isFileImage } from '@shared/utils/processImage';
 import 'react-tooltip/dist/react-tooltip.css';
-import { isFileImage } from '../../../../../utils/processImage';
-import { getImageInfo } from '../../../../../utils/getImageInfo';
 import { useAppDispatch } from '../../../hooks';
 
-import { addImage, nullImages, setDestPath } from '@renderer/features/images/imagesSlice';
-
-const notifyError = (text: string): unknown => toast.error(text, { duration: 1500 });
+import { addImage, nullImages, setDestPath } from '@renderer/features/images/store/imagesSlice';
+import { notifyError } from '@shared/toasts/NotifyError';
 
 const FolderForm = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -30,7 +28,6 @@ const FolderForm = (): JSX.Element => {
   };
 
   const pathFolderOnChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    console.log('here', e);
     if (!e.target.files?.length) {
       notifyError('Please select a non-empty directory');
     } else {
@@ -39,30 +36,8 @@ const FolderForm = (): JSX.Element => {
         return;
       }
       dispatch(setDestPath(webKitPath.substring(0, webKitPath.lastIndexOf('\\'))));
-      //setDestPath(webKitPath.substring(0, webKitPath.lastIndexOf('\\')));
     }
   };
-  // async function getFiles(dir, files = []) {
-  //   // Get an array of all files and directories in the passed directory using fs.readdirSync
-  //   const fileList = await api.readdirS(dir);
-  //   // Create the full path of the file/directory by concatenating the passed directory and file/directory name
-  //   for (const file of Array.from(fileList)) {
-  //     const name = `${dir}\\${file.name}`;
-  //     const imageReg = /(?!.*?\/).*?(?:\.(?:jpg|png|jpeg|svg|gif|svg))/g;
-  //     const isImage = imageReg.test(file.name);
-  //     // Check if the current file/directory is a directory using fs.statSync
-  //     if (api.isDirectory(name)) {
-  //       // If it is a directory, recursively call the getFiles function with the directory path and the files array
-  //       getFiles(name, files);
-  //     } else {
-  //       // If it is a file, push the full path to the files array
-  //       if (isImage) {
-  //         files.push(name);
-  //       }
-  //     }
-  //   }
-  //   return files;
-  // }
 
   return (
     <>
