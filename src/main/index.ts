@@ -9,8 +9,6 @@ import { ImageWithOptions } from '../shared/dtos/img.dto';
 import { IS_OPEN_FOLDER, PROCESS_IMAGE } from './../shared/constants/events.constants';
 const sharp = require('sharp');
 //import { processImage } from './processImage';
-
-const isDev = process.env.NODE_ENV !== 'production';
 // const isMac = process.platform === 'darwin';
 let mainWindow: BrowserWindow;
 let isOpenFolderAfterProcess = true;
@@ -33,7 +31,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
-    isDev && mainWindow.webContents.openDevTools();
+    //isDev && mainWindow.webContents.openDevTools();
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -267,9 +265,7 @@ async function optimizeAndResize({
     );
   }
 
-  // readableStream.pipe(writePipeline).on('finish', () => {
-  //   console.log('done');
-  // });
+  readableStream.pipe(writePipeline);
   // try {
   //   const fileName = path.basename(imgPath);
   //   await processImage(
