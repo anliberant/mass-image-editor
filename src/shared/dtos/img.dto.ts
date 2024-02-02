@@ -1,3 +1,5 @@
+import { ColourScapes } from '@shared/types/formatTypes/coloursSpace.type';
+
 export type TabStatusType = 'files' | 'options';
 export type FitStatusType = 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
 
@@ -42,6 +44,9 @@ export interface ShortImageDto {
   isMedian: boolean;
   medianSize: number;
   isConvolve: boolean;
+  isGreyscale: boolean;
+  isColourSpace: boolean;
+  colourSpace: ColourScapes;
 }
 export interface ExtendDto {
   isExtend: booleand;
@@ -120,6 +125,10 @@ export interface SharpenDto {
   sharpenY2: number;
   sharpenY3: number;
 }
+export interface TintDto {
+  isTint: boolean;
+  tintColor: string;
+}
 
 export interface ImgNotifyDto {
   format: string;
@@ -141,4 +150,5 @@ export type ImageWithOptions = ShortImageDto &
   ClaheDto &
   ThresholdDto &
   ModulateDto &
-  SharpenDto;
+  SharpenDto &
+  TintDto;

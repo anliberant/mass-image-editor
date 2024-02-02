@@ -1,3 +1,5 @@
+import { ColourScapes } from './formatTypes/coloursSpace.type';
+
 export interface IOptions {
   isExtend: boolean;
   leftExtend: number;
@@ -56,4 +58,9 @@ export interface IOptions {
   modulateSaturation: number;
   modulateHue: number;
   modulateLightness: number;
+  isTint: boolean;
+  tintColor: string;
+  isGreyscale: boolean;
+  isColourSpace: boolean;
+  colourSpace: ColourScapes;
 }

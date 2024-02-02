@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import AffineOption from './affineOption/AffineOption';
 import BlurOption from './blurOption/BlurOption';
 import ClaheOption from './claheOption/ClaheOption';
+import ColourSpaceOption from './colourSpaceOption/ColourSpaceOption';
 import ConsolveOption from './consolveOption/ConsolveOption';
 import ExtendOption from './extendOption/ExtendOption';
 import ExtractOption from './extractOption/ExtractOption';
@@ -13,6 +14,7 @@ import FlattenOption from './flattenOption/FlattenOption';
 import FlipOption from './flipOption/FlipOption';
 import FlopOption from './flopOption/FlopOtion';
 import GammaOption from './gammaOption/GammaOption';
+import GrayscaleOption from './greyscaleOption/GreyscaleOption';
 import MedianOption from './medianOption/MedianOption';
 import ModulateOption from './modulateOption/ModulateOption';
 import NegateOption from './negateOption/NegateOption';
@@ -20,6 +22,7 @@ import NormalizeOption from './normalizeOption/NormalizeOption';
 import RotateOption from './rotateOption/RotateOption';
 import SharpenOption from './sharpenOption/SharpenOption';
 import ThresholdOption from './thresholdOption/ThresholdOption';
+import TintOption from './tintOption/TintOption';
 import UnflattenOption from './unflattenOption/UnflattenOption';
 
 const defClasses = `w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 
@@ -140,6 +143,9 @@ const Options = (): JSX.Element => {
       <ConsolveOption />
       <ThresholdOption />
       <ModulateOption />
+      <TintOption />
+      <GrayscaleOption />
+      <ColourSpaceOption />
     </div>
   );
 };

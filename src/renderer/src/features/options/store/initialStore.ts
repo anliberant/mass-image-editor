@@ -16,6 +16,7 @@ import {
   THRESHOLD_DEFAULT_VAL,
   TRANSPARENT_COLOR,
 } from '@shared/constants/options.constants';
+import { ColourScapes } from '@shared/types/formatTypes/coloursSpace.type';
 import { IOptions } from '@shared/types/options.type';
 
 export const initialOptionsState: IOptions = {
@@ -76,4 +77,9 @@ export const initialOptionsState: IOptions = {
   modulateSaturation: 0,
   modulateHue: 0,
   modulateLightness: 0,
+  isTint: false,
+  tintColor: TRANSPARENT_COLOR,
+  isGreyscale: false,
+  isColourSpace: false,
+  colourSpace: ColourScapes.SRGB,
 };

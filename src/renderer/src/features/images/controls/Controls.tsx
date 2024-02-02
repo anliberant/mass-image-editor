@@ -65,6 +65,11 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
     sharpenX1,
     sharpenY2,
     sharpenY3,
+    isTint,
+    tintColor,
+    isGreyscale,
+    isColourSpace,
+    colourSpace,
   } = useAppSelector<IOptions>((state) => state.options);
   const sendImagesList = (): void => {
     images.forEach((image, i) => {
@@ -136,6 +141,11 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
         sharpenX1,
         sharpenY2,
         sharpenY3,
+        isTint,
+        tintColor,
+        isGreyscale,
+        isColourSpace,
+        colourSpace,
       });
       setIsUpdated(true);
     });

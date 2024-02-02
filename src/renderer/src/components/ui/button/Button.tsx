@@ -3,11 +3,11 @@ import { ButtonProps } from './Button.props';
 const Button = ({ type, children, onClick }: ButtonProps): JSX.Element => {
   return (
     <button
-      className={`flex items-center py-[10px] px-[12%] bg-red-500 
-      dark:bg-white dark:border  ${type === 'clear' && 'dark:border-red-500'}  ${
-        type === 'optimize' && 'dark:border-blue-200'
-      } rounded-xl
-      font-medium text-white text-lg hover:bg-red-100 dark:hover:bg-gray-100`}
+      className={`flex items-center py-[10px] px-[12%]  
+      dark:bg-white dark:border  ${
+        type === 'clear' && 'dark:border-red-500 bg-red-500 hover:bg-red-100'
+      }  ${type === 'optimize' && 'dark:border-blue-200 bg-blue-200 hover:bg-blue-100'} rounded-xl
+      font-medium text-white text-lg dark:hover:bg-gray-100`}
       onClick={onClick}
     >
       {type === 'clear' && (

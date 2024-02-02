@@ -31,7 +31,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
-    //isDev && mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -110,6 +110,11 @@ async function optimizeAndResize({
   sharpenX1,
   sharpenY2,
   sharpenY3,
+  isTint,
+  tintColor,
+  isGreyscale,
+  isColourSpace,
+  colourSpace,
 }: ImageWithOptions): Promise<void> {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
@@ -179,6 +184,9 @@ async function optimizeAndResize({
     lightness: modulateLightness,
     hue: modulateHue,
   });
+  const tintPipeline = sharp().tint(tintColor);
+  const greyscalePipeline = sharp().greyscale();
+  const colourSpacePipeline = sharp().toColourspace(colourSpace);
 
   const writePipeline = sharp({ failOnError: false }).toFile(
     dest + '\\' + fileName,
@@ -263,6 +271,15 @@ async function optimizeAndResize({
         y3: sharpenY3,
       })
     );
+  }
+  if (isTint) {
+    readableStream = readableStream.pipe(tintPipeline);
+  }
+  if (isGreyscale) {
+    readableStream = readableStream.pipe(greyscalePipeline);
+  }
+  if (isColourSpace) {
+    readableStream = readableStream.pipe(colourSpacePipeline);
   }
 
   readableStream.pipe(writePipeline);

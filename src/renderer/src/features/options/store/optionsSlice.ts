@@ -17,6 +17,7 @@ import {
   THRESHOLD_MAX_VAL,
   TRANSPARENT_COLOR,
 } from '@shared/constants/options.constants';
+import { ColourScapes } from '@shared/types/formatTypes/coloursSpace.type';
 import { THRESHOLD_DEFAULT_VAL } from './../../../../../shared/constants/options.constants';
 import { initialOptionsState } from './initialStore';
 
@@ -60,6 +61,11 @@ export const optionsSlice = createSlice({
       state.modulateSaturation = 0;
       state.modulateHue = 0;
       state.modulateLightness = 0;
+      state.isTint = false;
+      state.tintColor = TRANSPARENT_COLOR;
+      state.isGreyscale = false;
+      state.isColourSpace = false;
+      state.colourSpace = ColourScapes.SRGB;
     },
     nullAffine(state) {
       state.isAffine = false;
@@ -317,6 +323,25 @@ export const optionsSlice = createSlice({
     setModulateLightness(state, action) {
       state.modulateLightness = parseFloat(action.payload);
     },
+    setIsTint(state, action) {
+      state.isTint = action.payload;
+    },
+    setTintColor(state, action) {
+      state.tintColor = action.payload;
+    },
+    setIsGreyscale(state, action) {
+      state.isGreyscale = action.payload;
+    },
+    setIsColourSpace(state, action) {
+      state.isColourSpace = action.payload;
+    },
+    setColourSpace(state, action) {
+      const colourSpace = action.payload as ColourScapes;
+      if (colourSpace !== ColourScapes.SRGB) {
+        state.isColourSpace = true;
+      }
+      state.colourSpace = action.payload;
+    },
   },
 });
 export const {
@@ -379,6 +404,11 @@ export const {
   setModulateSaturation,
   setModulateHue,
   setModulateLightness,
+  setIsTint,
+  setTintColor,
+  setIsGreyscale,
+  setIsColourSpace,
+  setColourSpace,
 } = optionsSlice.actions;
 
 export default optionsSlice.reducer;
