@@ -42,7 +42,7 @@ const TintOption = (): JSX.Element => {
         <div className="md:pl-10">
           <CheckboxOptions
             checkboxValue={tintColorCheckbox}
-            checkboxLabel="Set flatten BACKGROUND"
+            checkboxLabel="Set tint BACKGROUND"
             inputValue={tintColor}
             setInputValue={setTintColor}
             setCheckboxValue={setTintColorCheckbox}
