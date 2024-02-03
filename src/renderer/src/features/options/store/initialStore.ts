@@ -17,6 +17,7 @@ import {
   TRANSPARENT_COLOR,
 } from '@shared/constants/options.constants';
 import { ColourScapes } from '@shared/types/formatTypes/coloursSpace.type';
+import { ChannelTypes } from '@shared/types/formats.type';
 import { IOptions } from '@shared/types/options.type';
 
 export const initialOptionsState: IOptions = {
@@ -82,4 +83,8 @@ export const initialOptionsState: IOptions = {
   isGreyscale: false,
   isColourSpace: false,
   colourSpace: ColourScapes.SRGB,
+  isRemoveAlpha: false,
+  isEnsureAlpha: false,
+  ensureAlphaVal: 1,
+  extractChannel: ChannelTypes.NONE,
 };

@@ -1,4 +1,5 @@
 import { ColourScapes } from '@shared/types/formatTypes/coloursSpace.type';
+import { ChannelTypes } from '@shared/types/formats.type';
 
 export type TabStatusType = 'files' | 'options';
 export type FitStatusType = 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
@@ -129,6 +130,12 @@ export interface TintDto {
   isTint: boolean;
   tintColor: string;
 }
+export interface ChannelManipulationDto {
+  isRemoveAlpha: boolean;
+  isEnsureAlpha: boolean;
+  ensureAlphaVal: number;
+  extractChannel: ChannelTypes;
+}
 
 export interface ImgNotifyDto {
   format: string;
@@ -151,4 +158,5 @@ export type ImageWithOptions = ShortImageDto &
   ThresholdDto &
   ModulateDto &
   SharpenDto &
-  TintDto;
+  TintDto &
+  ChannelManipulationDto;

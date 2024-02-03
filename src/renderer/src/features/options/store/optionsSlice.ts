@@ -18,6 +18,7 @@ import {
   TRANSPARENT_COLOR,
 } from '@shared/constants/options.constants';
 import { ColourScapes } from '@shared/types/formatTypes/coloursSpace.type';
+import { ChannelTypes } from '@shared/types/formats.type';
 import { THRESHOLD_DEFAULT_VAL } from './../../../../../shared/constants/options.constants';
 import { initialOptionsState } from './initialStore';
 
@@ -100,6 +101,12 @@ export const optionsSlice = createSlice({
       state.claheWidth = 0;
       state.claheHeight = 0;
       state.claheMaxSlope = CLAHE_DEFAULT_SLOPE;
+    },
+    nullChannelManipulation(state) {
+      state.isRemoveAlpha = false;
+      state.isEnsureAlpha = false;
+      state.ensureAlphaVal = 1;
+      state.extractChannel = ChannelTypes.NONE;
     },
     setLeftExtend(state, action) {
       state.leftExtend = parseInt(action.payload);
@@ -342,6 +349,24 @@ export const optionsSlice = createSlice({
       }
       state.colourSpace = action.payload;
     },
+    setIsRemoveAlpha(state, action) {
+      state.isRemoveAlpha = action.payload;
+    },
+    setIsEnsureAlpha(state, action) {
+      state.isEnsureAlpha = action.payload;
+    },
+    setEnsureAlphaValue(state, action) {
+      state.ensureAlphaVal = parseFloat(action.payload);
+    },
+    setExtractChannel(state, action) {
+      const extractChannel = action.payload as ChannelTypes;
+      if (extractChannel === ChannelTypes.NONE) {
+        state.isEnsureAlpha = false;
+      } else {
+        state.isEnsureAlpha = true;
+      }
+      state.extractChannel = action.payload;
+    },
   },
 });
 export const {
@@ -350,6 +375,7 @@ export const {
   nullSharpen,
   nullMedian,
   nullClahe,
+  nullChannelManipulation,
   setLeftExtend,
   setRightExtend,
   setTopExtend,
@@ -409,6 +435,10 @@ export const {
   setIsGreyscale,
   setIsColourSpace,
   setColourSpace,
+  setIsRemoveAlpha,
+  setIsEnsureAlpha,
+  setEnsureAlphaValue,
+  setExtractChannel,
 } = optionsSlice.actions;
 
 export default optionsSlice.reducer;

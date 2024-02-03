@@ -5,6 +5,7 @@ import CheckboxOptions from '../../components/ui/checkboxOption/CheckboxOptions'
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import AffineOption from './affineOption/AffineOption';
 import BlurOption from './blurOption/BlurOption';
+import ChanelManipulation from './chanelManipulation/ChanelManipulation';
 import ClaheOption from './claheOption/ClaheOption';
 import ColourSpaceOption from './colourSpaceOption/ColourSpaceOption';
 import ConsolveOption from './consolveOption/ConsolveOption';
@@ -146,6 +147,7 @@ const Options = (): JSX.Element => {
       <TintOption />
       <GrayscaleOption />
       <ColourSpaceOption />
+      <ChanelManipulation />
     </div>
   );
 };

@@ -9,7 +9,8 @@ import { ImageWithOptions } from '../shared/dtos/img.dto';
 import { IS_OPEN_FOLDER, PROCESS_IMAGE } from './../shared/constants/events.constants';
 const sharp = require('sharp');
 //import { processImage } from './processImage';
-// const isMac = process.platform === 'darwin';
+import { ChannelTypes } from './../shared/types/formats.type';
+const isMac = process.platform === 'darwin';
 let mainWindow: BrowserWindow;
 let isOpenFolderAfterProcess = true;
 
@@ -115,6 +116,10 @@ async function optimizeAndResize({
   isGreyscale,
   isColourSpace,
   colourSpace,
+  isRemoveAlpha,
+  isEnsureAlpha,
+  ensureAlphaVal,
+  extractChannel,
 }: ImageWithOptions): Promise<void> {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
@@ -187,6 +192,8 @@ async function optimizeAndResize({
   const tintPipeline = sharp().tint(tintColor);
   const greyscalePipeline = sharp().greyscale();
   const colourSpacePipeline = sharp().toColourspace(colourSpace);
+  const ensureAlphaPipeline = sharp().ensureAlpha(ensureAlphaVal);
+  const removeAlphaPipeline = sharp().removeAlpha();
 
   const writePipeline = sharp({ failOnError: false }).toFile(
     dest + '\\' + fileName,
@@ -280,6 +287,15 @@ async function optimizeAndResize({
   }
   if (isColourSpace) {
     readableStream = readableStream.pipe(colourSpacePipeline);
+  }
+  if (isRemoveAlpha) {
+    readableStream = readableStream.pipe(removeAlphaPipeline);
+  }
+  if (isEnsureAlpha) {
+    readableStream = readableStream.pipe(ensureAlphaPipeline);
+  }
+  if (extractChannel !== ChannelTypes.NONE) {
+    readableStream = readableStream.pipe(sharp().extractChannel(extractChannel));
   }
 
   readableStream.pipe(writePipeline);

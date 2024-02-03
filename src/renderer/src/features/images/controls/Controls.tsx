@@ -70,6 +70,10 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
     isGreyscale,
     isColourSpace,
     colourSpace,
+    isRemoveAlpha,
+    isEnsureAlpha,
+    ensureAlphaVal,
+    extractChannel,
   } = useAppSelector<IOptions>((state) => state.options);
   const sendImagesList = (): void => {
     images.forEach((image, i) => {
@@ -146,6 +150,10 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
         isGreyscale,
         isColourSpace,
         colourSpace,
+        isRemoveAlpha,
+        isEnsureAlpha,
+        ensureAlphaVal,
+        extractChannel,
       });
       setIsUpdated(true);
     });

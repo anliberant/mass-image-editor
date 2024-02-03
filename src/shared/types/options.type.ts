@@ -1,4 +1,5 @@
 import { ColourScapes } from './formatTypes/coloursSpace.type';
+import { ChannelTypes } from './formats.type';
 
 export interface IOptions {
   isExtend: boolean;
@@ -63,4 +64,8 @@ export interface IOptions {
   isGreyscale: boolean;
   isColourSpace: boolean;
   colourSpace: ColourScapes;
+  isRemoveAlpha: boolean;
+  isEnsureAlpha: boolean;
+  ensureAlphaVal: number;
+  extractChannel: ChannelTypes;
 }

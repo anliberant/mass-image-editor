@@ -10,3 +10,10 @@ export enum FormatTypes {
   JXL = 'jxl',
   RAW = 'raw',
 }
+export enum ChannelTypes {
+  RED = 'red';
+  GREEN = 'green';
+  BLUE = 'blue';
+  ALPHA = 'alpha';
+  NONE = 'none';
+}
