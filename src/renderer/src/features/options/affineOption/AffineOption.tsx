@@ -3,31 +3,43 @@ import OptionsDescriptor from '@renderer/components/ui/optionsDescriptor/Options
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { AFFINE_MINMAX_VALUE } from '@shared/constants/options.constants';
 import { IOptions } from '@shared/types/options.type';
-import { useState } from 'react';
-import { setAffineA, setAffineB, setAffineC, setAffineD } from '../../options/store/optionsSlice';
+import { useEffect, useState } from 'react';
+import {
+  setAffineA,
+  setAffineB,
+  setAffineC,
+  setAffineD,
+  setIsAffine,
+} from '../../options/store/optionsSlice';
 
 function AffineOption(): JSX.Element {
-  const { affineA, affineB, affineC, affineD } = useAppSelector<IOptions>((state) => state.options);
+  const { isAffine, affineA, affineB, affineC, affineD } = useAppSelector<IOptions>(
+    (state) => state.options
+  );
   const dispatch = useAppDispatch();
-  const [isAffineCheckbox, setIsAffineCheckbox] = useState(false);
+  const [isAffineCheckbox, setIsAffineCheckbox] = useState(isAffine || false);
+
+  const updateIsAffine = (): void => {
+    dispatch(setIsAffine(!isAffineCheckbox));
+    setIsAffineCheckbox((isAffineCheckbox) => !isAffineCheckbox);
+  };
+
+  useEffect(() => {
+    setIsAffineCheckbox(isAffine);
+  }, [isAffine]);
 
   return (
-    <div className="mt-[25px] flex flex-col justify-between">
-      <div
-        className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
-pl-6 pr-4 w-full h-[40px]"
-      >
+    <div className="options__container">
+      <div className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 pl-6 pr-4 w-full h-[40px]">
         <input
           type="checkbox"
           checked={isAffineCheckbox}
           className="w-4 h-4 text-blue-600 bg-gray-100
        border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 
        focus:ring-2 dark:bg-gray-500"
-          onChange={(): void => setIsAffineCheckbox((isAffineCheckbox) => !isAffineCheckbox)}
+          onChange={updateIsAffine}
         />
-        <label htmlFor="bordered-checkbox-1" className="w-full py-2 ms-2 pl-[12px] font-inter">
-          Affine (The transformation matrix)
-        </label>
+        <label className="options__label">Affine (The transformation matrix)</label>
       </div>
       <OptionsDescriptor isChecked={isAffineCheckbox}>
         <>
@@ -78,8 +90,8 @@ pl-6 pr-4 w-full h-[40px]"
         </p>
       </OptionsDescriptor>
       {isAffineCheckbox && (
-        <div className="w-full flex flex-col md:flex-row justify-between sm:pl-10 gap-4">
-          <div className="flex flex-col w-full">
+        <div className="options__input_container">
+          <div className="options__input_flex-wrapper">
             <div
               className="flex items-center justify-center flex-col ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
 pl-6 pr-4 w-full md:w-[48%] h-full mt-5"
@@ -92,8 +104,7 @@ pl-6 pr-4 w-full md:w-[48%] h-full mt-5"
                     step={0.2}
                     max={AFFINE_MINMAX_VALUE}
                     min={-AFFINE_MINMAX_VALUE}
-                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center"
-                    placeholder=""
+                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center bg-gray-200 dark:bg-gray-550"
                     value={affineA}
                     onChange={(e: InputEvent): void => dispatch(setAffineA(e.target.value))}
                   />
@@ -106,7 +117,7 @@ pl-6 pr-4 w-full md:w-[48%] h-full mt-5"
                     step={0.2}
                     max={AFFINE_MINMAX_VALUE}
                     min={-AFFINE_MINMAX_VALUE}
-                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center mr-3"
+                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center bg-gray-200 dark:bg-gray-550 mr-3"
                     placeholder=""
                     value={affineB}
                     onChange={(e: InputEvent): void => dispatch(setAffineB(e.target.value))}
@@ -122,7 +133,7 @@ pl-6 pr-4 w-full md:w-[48%] h-full mt-5"
                     step={0.2}
                     max={AFFINE_MINMAX_VALUE}
                     min={-AFFINE_MINMAX_VALUE}
-                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center"
+                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center bg-gray-200 dark:bg-gray-550"
                     placeholder=""
                     value={affineC}
                     onChange={(e: InputEvent): void => dispatch(setAffineC(e.target.value))}
@@ -136,7 +147,7 @@ pl-6 pr-4 w-full md:w-[48%] h-full mt-5"
                     step={0.2}
                     max={AFFINE_MINMAX_VALUE}
                     min={-AFFINE_MINMAX_VALUE}
-                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center mr-3"
+                    className="flex-shrink-0 text-gray-900 dark:text-white border-0 text-sm font-normal focus:ring-0 max-w-[2.5rem] text-center bg-gray-200 dark:bg-gray-550 mr-3"
                     placeholder=""
                     value={affineD}
                     onChange={(e: InputEvent): void => dispatch(setAffineD(e.target.value))}

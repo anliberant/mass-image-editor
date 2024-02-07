@@ -11,6 +11,7 @@ import { notifyError } from '@shared/toasts/NotifyError';
 
 const FolderForm = (): JSX.Element => {
   const dispatch = useAppDispatch();
+
   const folderOnChange = async (e: ChangeEvent<HTMLInputElement>): void => {
     if (!e.target.files?.length) {
       notifyError('Please select a non-empty directory');
@@ -45,7 +46,7 @@ const FolderForm = (): JSX.Element => {
         <label
           className="flex items-center justify-center w-[216px] h-[45px] border border-gray-300 border-dashed 
         rounded-lg cursor-pointer 
-        bg-gray-100 hover:bg-gray-250 dark:hover:bg-bray-400 dark:bg-gray-500 dark:hover:bg-gray-250
+        bg-gray-100 hover:bg-gray-250 dark:bg-gray-500 dark:hover:bg-gray-250
         hover:shadow-lg dark:hover:shadow-gray-400 hover:rotate-44"
         >
           <svg
@@ -68,13 +69,18 @@ const FolderForm = (): JSX.Element => {
           <p className="mb-1 pl-2 text-sm text-gray-500 dark:text-gray-400">
             <span className="font-semibold">Select a folder</span>
           </p>
-          <input type="file" className="hidden" webkitdirectory="" onChange={folderOnChange} />
+          <input
+            type="file"
+            className="hidden"
+            webkitdirectory=""
+            onChange={(e: ChangeEvent<HTMLInputElement>): void => folderOnChange(e)}
+          />
         </label>
         <ReactTooltip className="text-white bg-red-500 z-50" id="my-tooltip" />
         <label
           className="flex items-center justify-center w-[216px] h-[45px] border border-gray-300 border-dashed 
         rounded-lg cursor-pointer 
-        bg-gray-100 hover:bg-gray-250 dark:hover:bg-bray-400 dark:bg-gray-500 dark:hover:bg-gray-250
+        bg-gray-100 hover:bg-gray-250 dark:bg-gray-500 dark:hover:bg-gray-250
         hover:shadow-lg dark:hover:shadow-gray-400 hover:rotate-4"
           data-tooltip-id="my-tooltip"
           data-tooltip-content="Select a non-empty folder!"

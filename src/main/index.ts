@@ -7,10 +7,9 @@ import * as fs from 'fs';
 import icon from '../../resources/icon.png?asset';
 import { ImageWithOptions } from '../shared/dtos/img.dto';
 import { IS_OPEN_FOLDER, PROCESS_IMAGE } from './../shared/constants/events.constants';
-const sharp = require('sharp');
-//import { processImage } from './processImage';
 import { ChannelTypes } from './../shared/types/formats.type';
-const isMac = process.platform === 'darwin';
+const sharp = require('sharp');
+//const isMac = process.platform === 'darwin';
 let mainWindow: BrowserWindow;
 let isOpenFolderAfterProcess = true;
 
@@ -84,7 +83,7 @@ async function optimizeAndResize({
   gammaVal,
   gammaOut,
   isNegate,
-  negateAlpha,
+  isNegateAlpha,
   isNormalize,
   normalizeLower,
   normalizeUpper,
@@ -97,19 +96,25 @@ async function optimizeAndResize({
   isConvolve,
   isThreshold,
   thresholdVal,
-  thresholdGreyscale,
-  thresholdGrayscale,
+  isThresholdGreyscale,
+  isThresholdGrayscale,
   isModulate,
   modulateBrightness,
   modulateSaturation,
   modulateHue,
   modulateLightness,
   isSharpen,
+  isSharpenSigma,
   sharpenSigma,
+  isSharpenM1,
   sharpenM1,
+  isSharpenM2,
   sharpenM2,
+  isSharpenX1,
   sharpenX1,
+  isSharpenY2,
   sharpenY2,
+  isSharpenY3,
   sharpenY3,
   isTint,
   tintColor,
@@ -120,6 +125,10 @@ async function optimizeAndResize({
   isEnsureAlpha,
   ensureAlphaVal,
   extractChannel,
+  isCreatePrefix,
+  prefix,
+  isCreateSuffix,
+  suffix,
 }: ImageWithOptions): Promise<void> {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest);
@@ -130,6 +139,15 @@ async function optimizeAndResize({
   ];
   const resize = newWidth !== width || newHeight !== height;
   const fileName = path.basename(imgPath);
+
+  let newFileName = fileName;
+  if (isCreatePrefix) {
+    newFileName = prefix + newFileName;
+  }
+  if (isCreateSuffix) {
+    newFileName = newFileName.replace('.', suffix + '.');
+  }
+  const destination = dest + '\\' + newFileName;
 
   let readableStream = fs.createReadStream(imgPath);
   //const writeableStream = fs.createWriteStream(dest);
@@ -177,11 +195,11 @@ async function optimizeAndResize({
   const flattenPipeline = sharp().flatten({ background: flattenBg });
   const unFlattenPipeline = sharp().unflatten();
   const gammaPipeline = sharp().gamma(gammaVal, gammaOut);
-  const negatePipeline = sharp().negate({ alpha: negateAlpha });
+  const negatePipeline = sharp().negate({ alpha: isNegateAlpha });
   const normalizePipeline = sharp().normalize({ lower: normalizeLower, upper: normalizeUpper });
   const thresholdPipeline = sharp().threshold(thresholdVal, {
-    greyscale: thresholdGreyscale,
-    grayscale: thresholdGrayscale,
+    greyscale: isThresholdGreyscale,
+    grayscale: isThresholdGrayscale,
   });
   const modulatePipeline = sharp().modulate({
     brightness: modulateBrightness,
@@ -191,23 +209,23 @@ async function optimizeAndResize({
   });
   const tintPipeline = sharp().tint(tintColor);
   const greyscalePipeline = sharp().greyscale();
-  const colourSpacePipeline = sharp().toColourspace(colourSpace);
+  const colourSpacePipeline = sharp().toColourspace(colourSpace.toLowerCase());
   const ensureAlphaPipeline = sharp().ensureAlpha(ensureAlphaVal);
   const removeAlphaPipeline = sharp().removeAlpha();
 
-  const writePipeline = sharp({ failOnError: false }).toFile(
-    dest + '\\' + fileName,
-    (err, info) => {
-      const file = { ...info, name: fileName, imgPath };
-      mainWindow.webContents.send('image:done', file);
-    }
-  );
+  const writePipeline = sharp({ failOnError: false }).toFile(destination, (err, info) => {
+    const file = { ...info, name: fileName, imgPath };
+    mainWindow.webContents.send('image:done', file);
+  });
 
   if (rotate) {
     readableStream = readableStream.pipe(rotatePipeline);
   }
   if (resize) {
     readableStream = readableStream.pipe(resizedPipeline);
+  }
+  if (isTrim) {
+    readableStream = readableStream.pipe(trimPipeline);
   }
   if (isExtend) {
     readableStream = readableStream.pipe(extendPipeline);
@@ -268,16 +286,29 @@ async function optimizeAndResize({
     readableStream = readableStream.pipe(modulatePipeline);
   }
   if (isSharpen) {
-    readableStream = readableStream.pipe(
-      sharp().sharpen({
-        sigma: sharpenSigma,
-        m1: sharpenM1,
-        m2: sharpenM2,
-        x1: sharpenX1,
-        y2: sharpenY2,
-        y3: sharpenY3,
-      })
-    );
+    let sharpenOptions = { ...sharpenOptionsClone, sigma: sharpenSigma };
+    let sharpenOptionsClone = { ...sharpenOptions };
+    if (isSharpenM1) {
+      sharpenOptions = { ...sharpenOptionsClone, m1: sharpenM1 };
+      sharpenOptionsClone = { ...sharpenOptions };
+    }
+    if (isSharpenM2) {
+      sharpenOptions = { ...sharpenOptionsClone, m2: sharpenM2 };
+      sharpenOptionsClone = { ...sharpenOptions };
+    }
+    if (isSharpenX1) {
+      sharpenOptions = { ...sharpenOptionsClone, x1: sharpenX1 };
+      sharpenOptionsClone = { ...sharpenOptions };
+    }
+    if (isSharpenY2) {
+      sharpenOptions = { ...sharpenOptionsClone, y2: sharpenY2 };
+      sharpenOptionsClone = { ...sharpenOptions };
+    }
+    if (isSharpenY3) {
+      sharpenOptions = { ...sharpenOptionsClone, y3: sharpenY3 };
+    }
+
+    readableStream = readableStream.pipe(sharp().sharpen(sharpenOptions));
   }
   if (isTint) {
     readableStream = readableStream.pipe(tintPipeline);
@@ -295,7 +326,7 @@ async function optimizeAndResize({
     readableStream = readableStream.pipe(ensureAlphaPipeline);
   }
   if (extractChannel !== ChannelTypes.NONE) {
-    readableStream = readableStream.pipe(sharp().extractChannel(extractChannel));
+    readableStream = readableStream.pipe(sharp().extractChannel(extractChannel.toLowerCase()));
   }
 
   readableStream.pipe(writePipeline);

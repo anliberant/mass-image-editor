@@ -1,6 +1,14 @@
 import { useState } from 'react';
 
-import { setDestNameFolder, setIsCreateDestSub } from '@renderer/features/images/store/imagesSlice';
+import {
+  setDestNameFolder,
+  setIsCreateDestSub,
+  setIsCreatePreffix,
+  setIsCreateSuffix,
+  setPrefix,
+  setSuffix,
+} from '@renderer/features/images/store/imagesSlice';
+import { IImages } from '@shared/types/images.type';
 import CheckboxOptions from '../../components/ui/checkboxOption/CheckboxOptions';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import AffineOption from './affineOption/AffineOption';
@@ -20,6 +28,7 @@ import MedianOption from './medianOption/MedianOption';
 import ModulateOption from './modulateOption/ModulateOption';
 import NegateOption from './negateOption/NegateOption';
 import NormalizeOption from './normalizeOption/NormalizeOption';
+import OptionsControls from './optionsControls/OptionsControls';
 import RotateOption from './rotateOption/RotateOption';
 import SharpenOption from './sharpenOption/SharpenOption';
 import ThresholdOption from './thresholdOption/ThresholdOption';
@@ -41,9 +50,8 @@ after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:
 dark:border-gray-500 bg-blue-200`;
 
 const Options = (): JSX.Element => {
-  const { destNameFolder, isCreateDestSub, isUnflatten } = useAppSelector<ImagesState>(
-    (state) => state.images
-  );
+  const { destNameFolder, isCreateDestSub, isCreatePrefix, prefix, isCreateSuffix, suffix } =
+    useAppSelector<IImages>((state) => state.images);
   const dispatch = useAppDispatch();
   const [isOpenFolder, setIsOpenFolder] = useState(true);
 
@@ -54,6 +62,12 @@ const Options = (): JSX.Element => {
 
   const updateIsCreateDestSub = (): void => {
     dispatch(setIsCreateDestSub(!isCreateDestSub));
+  };
+  const updateIsCreatePrefix = (): void => {
+    dispatch(setIsCreatePreffix(!isCreatePrefix));
+  };
+  const updateIsCreateSuffix = (): void => {
+    dispatch(setIsCreateSuffix(!isCreateSuffix));
   };
 
   return (
@@ -126,6 +140,20 @@ const Options = (): JSX.Element => {
         setInputValue={setDestNameFolder}
         setCheckboxValue={updateIsCreateDestSub}
       />
+      <CheckboxOptions
+        checkboxValue={isCreatePrefix}
+        checkboxLabel="Add a prefix to the results"
+        inputValue={prefix}
+        setInputValue={setPrefix}
+        setCheckboxValue={updateIsCreatePrefix}
+      />
+      <CheckboxOptions
+        checkboxValue={isCreateSuffix}
+        checkboxLabel="Add a suffix to the results"
+        inputValue={suffix}
+        setInputValue={setSuffix}
+        setCheckboxValue={updateIsCreateSuffix}
+      />
       <ExtendOption />
       <ExtractOption />
       <RotateOption />
@@ -148,6 +176,7 @@ const Options = (): JSX.Element => {
       <GrayscaleOption />
       <ColourSpaceOption />
       <ChanelManipulation />
+      <OptionsControls />
     </div>
   );
 };

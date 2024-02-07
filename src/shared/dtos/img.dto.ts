@@ -65,7 +65,9 @@ export interface ExtractDto {
   heightExtract: number;
 }
 export interface RotateDto {
+  isRotate: boolean;
   rotate: number;
+  isRotateBg: boolean;
   rotateBg: string;
 }
 export interface AffineDto {
@@ -91,7 +93,7 @@ export interface GammaDto {
 }
 export interface NegateDto {
   isNegate: boolean;
-  negateAlpha: boolean;
+  isNegateAlpha: boolean;
 }
 export interface NormalizeDto {
   isNormalize: boolean;
@@ -107,8 +109,8 @@ export interface ClaheDto {
 export interface ThresholdDto {
   isThreshold: boolean;
   thresholdVal: number;
-  thresholdGreyscale: boolean;
-  thresholdGrayscale: boolean;
+  isThresholdGreyscale: boolean;
+  isThresholdGrayscale: boolean;
 }
 export interface ModulateDto {
   isModulate: boolean;
@@ -119,11 +121,18 @@ export interface ModulateDto {
 }
 export interface SharpenDto {
   isSharpen: boolean;
+  isSharpenDefaults: boolean;
+  isSharpenSigma: boolean;
   sharpenSigma: number;
+  isSharpenM1: boolean;
   sharpenM1: number;
+  isSharpenM2: boolean;
   sharpenM2: number;
+  isSharpenX1: boolean;
   sharpenX1: number;
+  isSharpenY2: boolean;
   sharpenY2: number;
+  isSharpenY3: boolean;
   sharpenY3: number;
 }
 export interface TintDto {
@@ -135,6 +144,12 @@ export interface ChannelManipulationDto {
   isEnsureAlpha: boolean;
   ensureAlphaVal: number;
   extractChannel: ChannelTypes;
+}
+export interface ImgOptionsDto {
+  isCreatePrefix: boolean;
+  prefix: string;
+  isCreateSuffix: boolean;
+  suffix: string;
 }
 
 export interface ImgNotifyDto {
@@ -159,4 +174,5 @@ export type ImageWithOptions = ShortImageDto &
   ModulateDto &
   SharpenDto &
   TintDto &
-  ChannelManipulationDto;
+  ChannelManipulationDto &
+  ImgOptionsDto;

@@ -2,9 +2,15 @@ import CheckboxOptions from '@renderer/components/ui/checkboxOption/CheckboxOpti
 import OptionsDescriptor from '@renderer/components/ui/optionsDescriptor/OptionsDescriptor';
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { IOptions } from '@shared/types/options.type';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   setIsModulate,
+  setIsModulateBrightness,
+  setIsModulateHue,
+  setIsModulateLightness,
+  setIsModulateSaturation,
+  setIsOptionsReseted,
+  setIsOptionsUpdated,
   setModulateBrightness,
   setModulateHue,
   setModulateLightness,
@@ -12,75 +18,129 @@ import {
 } from '../store/optionsSlice';
 
 const ModulateOption = (): JSX.Element => {
-  const { isModulate, modulateBrightness, modulateSaturation, modulateHue, modulateLightness } =
-    useAppSelector<IOptions>((state) => state.options);
+  const {
+    isModulate,
+    isModulateBrightness,
+    modulateBrightness,
+    isModulateSaturation,
+    modulateSaturation,
+    isModulateHue,
+    modulateHue,
+    isModulateLightness,
+    modulateLightness,
+  } = useAppSelector<IOptions>((state) => state.options);
   const dispatch = useAppDispatch();
-  const [isSetModulateBrightness, setIsSetModulateBrightness] = useState(false);
-  const [isSetModulateSaturation, setIsSetModulateSaturation] = useState(false);
-  const [isSetModulateHue, setIsSetModulateHue] = useState(false);
-  const [isSetModulateLightness, setIsSetModulateLightness] = useState(false);
+
+  const [isModulateCheckbox, setIsModulateCheckbox] = useState(isModulate || false);
+  const [isModulateBrightnessCheckbox, setIsModulateBrightnessCheckbox] = useState(
+    isModulateBrightness || false
+  );
+  const [isModulateSaturationCheckbox, setIsModulateSaturationCheckbox] = useState(
+    modulateSaturation || false
+  );
+  const [isModulateHueCheckbox, setIsModulateHueCheckbox] = useState(isModulateHue || false);
+  const [isModulateLightnessCheckbox, setIsModulateLightnessCheckbox] = useState(
+    isModulateLightness || false
+  );
+
+  const updateOptionsNotifier = (): void => {
+    dispatch(setIsOptionsUpdated(false));
+    dispatch(setIsOptionsReseted(false));
+  };
+  const updateIsModulate = (): void => {
+    dispatch(setIsModulate(!isModulateCheckbox));
+    setIsModulateCheckbox((isModulateCheckbox) => !isModulateCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsModulateBrightness = (): void => {
+    dispatch(setIsModulateBrightness(!isModulateBrightnessCheckbox));
+    setIsModulateBrightnessCheckbox(
+      (isModulateBrightnessCheckbox) => !isModulateBrightnessCheckbox
+    );
+    updateOptionsNotifier();
+  };
+  const updateIsModulateSaturation = (): void => {
+    dispatch(setIsModulateSaturation(!isModulateSaturationCheckbox));
+    setIsModulateSaturationCheckbox(
+      (isModulateSaturationCheckbox) => !isModulateSaturationCheckbox
+    );
+    updateOptionsNotifier();
+  };
+  const updateIsModulateHue = (): void => {
+    dispatch(setIsModulateHue(!isModulateHueCheckbox));
+    setIsModulateHueCheckbox((isModulateHueCheckbox) => !isModulateHueCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsModulateLightness = (): void => {
+    dispatch(setIsModulateLightness(!isModulateLightnessCheckbox));
+    setIsModulateLightnessCheckbox((isModulateLightnessCheckbox) => !isModulateLightnessCheckbox);
+    updateOptionsNotifier();
+  };
+
+  useEffect(() => {
+    setIsModulateCheckbox(isModulate || false);
+    setIsModulateBrightnessCheckbox(isModulateBrightness || false);
+    setIsModulateSaturationCheckbox(isModulateSaturation || false);
+    setIsModulateHueCheckbox(isModulateHue || false);
+    setIsModulateLightnessCheckbox(isModulateLightness || false);
+  }, [isModulate, isModulateBrightness, isModulateSaturation, isModulateHue, isModulateLightness]);
+
   return (
-    <div className="mt-[25px] flex flex-col justify-between">
-      <div
-        className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
-pl-6 pr-4 w-full h-[40px]"
-      >
+    <div className="options__container">
+      <div className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 pl-6 pr-4 w-full h-[40px]">
         <input
           type="checkbox"
-          checked={isModulate}
+          checked={isModulateCheckbox}
           className="w-4 h-4 text-blue-600 bg-gray-100
-       border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 
-       focus:ring-2 dark:bg-gray-500"
-          onChange={(): void => dispatch(setIsModulate(!isModulate))}
+       border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500"
+          onChange={updateIsModulate}
         />
-        <label htmlFor="bordered-checkbox-1" className="w-full py-2 ms-2 pl-[12px] font-inter">
-          Modulate
-        </label>
+        <label className="options__label">Modulate</label>
       </div>
-      <OptionsDescriptor isChecked={isModulate}>
+      <OptionsDescriptor isChecked={isModulateCheckbox}>
         Modulate is a versatile operation in image processing for adjusting the brightness,
         saturation, and hue of images, allowing for creative control over the color appearance and
         overall visual quality of images.
       </OptionsDescriptor>
-      {isModulate && (
+      {isModulateCheckbox && (
         <div className="pl-10">
           <CheckboxOptions
-            checkboxValue={isSetModulateBrightness}
+            checkboxValue={isModulateBrightnessCheckbox}
             checkboxLabel="Brightness"
             inputValue={modulateBrightness}
             setInputValue={setModulateBrightness}
-            setCheckboxValue={setIsSetModulateBrightness}
+            setCheckboxValue={updateIsModulateBrightness}
             type="number"
             step={0.1}
             min={0}
           />
           <CheckboxOptions
-            checkboxValue={isSetModulateSaturation}
+            checkboxValue={isModulateSaturationCheckbox}
             checkboxLabel="Saturation"
             inputValue={modulateSaturation}
             setInputValue={setModulateSaturation}
-            setCheckboxValue={setIsSetModulateSaturation}
+            setCheckboxValue={updateIsModulateSaturation}
             type="number"
             step={0.1}
             min={0}
           />
           <CheckboxOptions
-            checkboxValue={isSetModulateHue}
+            checkboxValue={isModulateHueCheckbox}
             checkboxLabel="Hue"
             inputValue={modulateHue}
             setInputValue={setModulateHue}
-            setCheckboxValue={setIsSetModulateHue}
+            setCheckboxValue={updateIsModulateHue}
             type="number"
             step={1}
             min={0}
           />
 
           <CheckboxOptions
-            checkboxValue={isSetModulateLightness}
+            checkboxValue={isModulateLightnessCheckbox}
             checkboxLabel="Lightness"
             inputValue={modulateLightness}
             setInputValue={setModulateLightness}
-            setCheckboxValue={setIsSetModulateLightness}
+            setCheckboxValue={updateIsModulateLightness}
             type="number"
             step={0.1}
             min={0}

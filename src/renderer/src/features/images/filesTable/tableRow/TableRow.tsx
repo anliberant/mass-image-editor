@@ -1,3 +1,4 @@
+import StatusBadge from '@renderer/components/ui/statusBadge/StatusBadge';
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { ImageDto, StatusType } from '@shared/dtos/img.dto';
 import { FormatTypes } from '@shared/types/formats.type';
@@ -69,7 +70,7 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
     >
       <th
         scope="row"
-        className="flex gap-4 items-center text-center sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap font-medium text-darkdark:text-white align-super"
+        className="flex gap-4 items-center text-center sm:px-1 md:px-2 xl:px-6 py-2 whitespace-nowrap font-medium text-dark dark:text-white align-super"
       >
         <img src={src} width={20} height={20} alt={name} className="rounded-sm" />
         {name > 14 ? name.substring(0, 14) + '...' : name}
@@ -94,7 +95,6 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           min={1}
           onChange={(e: ChangeEvent<HTMLInputElement>): void => setNewWidth(e)}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="90210"
         />
       </td>
       <td className="table__row">
@@ -105,7 +105,6 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           min={1}
           onChange={(e: ChangeEvent<HTMLInputElement>): void => setNewHeight(e)}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="90210"
         />
       </td>
       <td className="table__row">
@@ -130,7 +129,9 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           className="text-center border border-gray-300 text-sm rounded-lg focus:ring-blue-500
              focus:border-blue-500 block w-full p-1.5 dark:bg-gray-500 dark:border-gray-600 
              dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          onChange={(e: ChangeEvent<HTMLSelectElement>): void => updateImageFormat(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>): void =>
+            updateImageFormat(e.target.value.toLowerCase())
+          }
           value={image.newFormat || image.format}
         >
           <option value={FormatTypes.JPEG}>jpeg</option>
@@ -168,12 +169,8 @@ const TableRow = ({ originName, i }: TableProps): JSX.Element => {
           />
         )}
       </td>
-      <td
-        className={`table__row ${
-          status === StatusType.completed ? 'text-green dark:text-green' : ''
-        }`}
-      >
-        {status}
+      <td className={`table__row`}>
+        <StatusBadge status={status} />
       </td>
     </tr>
   );

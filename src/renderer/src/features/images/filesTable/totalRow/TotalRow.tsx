@@ -1,5 +1,6 @@
+import StatusBadge from '@renderer/components/ui/statusBadge/StatusBadge';
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
-import { ImageDto } from '@shared/dtos/img.dto';
+import { ImageDto, StatusType } from '@shared/dtos/img.dto';
 import { FormatTypes } from '@shared/types/formats.type';
 import { IImages } from '@shared/types/images.type';
 import { getSizeStr } from '@shared/utils/calcSize';
@@ -8,12 +9,11 @@ import { updateImage } from '../../store/imagesSlice';
 
 const TotalRow = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { images, totalSize, optimizedSize, maxWidth, maxHeight } = useAppSelector<IImages>(
-    (store) => store.images
-  );
+  const { images, totalSize, optimizedSize, maxWidth, maxHeight, isAllCompleted } =
+    useAppSelector<IImages>((store) => store.images);
 
   const [trimAllChecked, setTrimAllChecked] = useState(false);
-  const [allResize, setAllResize] = useState('100%');
+  //const [allResize, setAllResize] = useState('100%');
   const [trimAllColor, setTrimAllColor] = useState('#ffffff');
   const [allWidth, setAllWidth] = useState(maxWidth);
   const [allHeight, setAllHeight] = useState(maxHeight);
@@ -37,12 +37,12 @@ const TotalRow = (): JSX.Element => {
     optSizeStr = getSizeStr(optimizedSize);
   }
 
-  const formatChange = (e: ChangeEvent<HTMLSelectElement>): void => {
-    images.forEach((image: ImageDto) => {
-      //@ts-expect-error:method with premade
-      dispatch(updateImage(image.name, { newFormat: e.target.value }));
-    });
-  };
+  // const formatChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+  //   images.forEach((image: ImageDto) => {
+  //     //@ts-expect-error:method with premade
+  //     dispatch(updateImage(image.name, { newFormat: e.target.value }));
+  //   });
+  // };
 
   const setAllToTrim = (): void => {
     images.forEach((image: ImageDto) => {
@@ -83,22 +83,22 @@ const TotalRow = (): JSX.Element => {
     });
   };
 
-  const resizeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
-    if (e.target.value === 'custom') {
-      dispatch(setNewSizeForName('all'));
-    } else {
-      dispatch(setNewSizeForName('none'));
-      images.forEach((image: ImageDto) => {
-        dispatch(
-          // @ts-expect-error:method with premade
-          updateImage(image.name, {
-            resize: e.target.value,
-          })
-        );
-      });
-    }
-    setAllResize(e.target.value);
-  };
+  // const resizeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+  //   if (e.target.value === 'custom') {
+  //     dispatch(setNewSizeForName('all'));
+  //   } else {
+  //     dispatch(setNewSizeForName('none'));
+  //     images.forEach((image: ImageDto) => {
+  //       dispatch(
+  //         // @ts-expect-error:method with premade
+  //         updateImage(image.name, {
+  //           resize: e.target.value,
+  //         })
+  //       );
+  //     });
+  //   }
+  //   setAllResize(e.target.value);
+  // };
 
   useEffect(() => {
     if (allWidth === maxWidth) {
@@ -210,7 +210,9 @@ const TotalRow = (): JSX.Element => {
         )}
       </td>
 
-      <td className="md:table-cell table__row"></td>
+      <td className="md:table-cell table__row">
+        <StatusBadge status={isAllCompleted ? StatusType.completed : StatusType.notProcessed} />
+      </td>
     </tr>
   );
 };

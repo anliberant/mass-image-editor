@@ -2,46 +2,59 @@ import CircularSlider from '@fseehawer/react-circular-slider';
 import OptionsDescriptor from '@renderer/components/ui/optionsDescriptor/OptionsDescriptor';
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { IOptions } from '@shared/types/options.type';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CheckboxOptions from '../../../components/ui/checkboxOption/CheckboxOptions';
-import { setRotate, setRotateBg } from '../../options/store/optionsSlice';
+import {
+  setIsOptionsReseted,
+  setIsOptionsUpdated,
+  setIsRotate,
+  setIsRotateBg,
+  setRotate,
+  setRotateBg,
+} from '../../options/store/optionsSlice';
 
 const RotateOption = (): JSX.Element => {
-  const { rotate, rotateBg } = useAppSelector<IOptions>((state) => state.options);
+  const { isRotate, rotate, isRotateBg, rotateBg } = useAppSelector<IOptions>(
+    (state) => state.options
+  );
   const dispatch = useAppDispatch();
-  const [isRotating, setIsRotating] = useState(false);
+  const [isRotating, setIsRotating] = useState(isRotate || false);
   const [isDragging, setIsDragging] = useState(false);
-  const [isSetRotateBg, setIsSetRotateBg] = useState(false);
+  const [isSetRotateBgCheckbox, setIsSetRotateBgCheckbox] = useState(isRotateBg || false);
 
   const onRotate = (val: number): void => {
     dispatch(setRotate(val));
+    dispatch(setIsOptionsUpdated(false));
+    dispatch(setIsOptionsReseted(false));
   };
+  const updateIsRotate = (): void => {
+    dispatch(setIsRotate(!isRotating));
+    setIsRotating((isRotating) => !isRotating);
+  };
+  const updateIsRotateBg = (): void => {
+    dispatch(setIsRotateBg(!isSetRotateBgCheckbox));
+    setIsSetRotateBgCheckbox((isSetRotateBgCheckbox) => !isSetRotateBgCheckbox);
+  };
+
+  useEffect(() => {
+    setIsRotating(isRotate);
+  }, [isRotate]);
+
   return (
     <>
-      <div className="mt-[25px] flex flex-col md:flex-row gap-5 justify-between">
-        <div
-          className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
-  pl-6 pr-4 w-full md:w-[48%] h-[40px]"
-        >
+      <div className="options__container md:flex-row gap-5">
+        <div className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 pl-6 pr-4 w-full md:w-[48%] h-[40px]">
           <input
             type="checkbox"
-            name="bordered-checkbox"
             checked={isRotating}
             className="w-4 h-4 bg-blue-500 border-gray-300 rounded 
-      focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 
-      dark:bg-gray-700 dark:border-gray-600"
-            onChange={(): void => setIsRotating((isRotating) => !isRotating)}
+      focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            onChange={updateIsRotate}
           />
-          <label htmlFor="bordered-checkbox" className="w-full py-2 ms-2 pl-[12px] font-inter">
-            Rotate
-          </label>
+          <label className="options__label">Rotate</label>
         </div>
         {isRotating && (
-          <div
-            className="flex justify-center items-center w-[48%] h-40 pl-4 pr-4 border border-gray-300 rounded-lg bg-gray-50 
-        focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 
-        dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
+          <div className="flex justify-center items-center w-[48%] h-40 pl-4 pr-4 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <CircularSlider
               min={0}
               max={360}
@@ -76,11 +89,11 @@ const RotateOption = (): JSX.Element => {
       {isRotating && (
         <div className="md:pl-10">
           <CheckboxOptions
-            checkboxValue={isSetRotateBg}
+            checkboxValue={isSetRotateBgCheckbox}
             checkboxLabel="Set rotate BACKGROUND"
             inputValue={rotateBg}
             setInputValue={setRotateBg}
-            setCheckboxValue={setIsSetRotateBg}
+            setCheckboxValue={updateIsRotateBg}
             type="color"
           />
         </div>

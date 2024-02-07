@@ -2,36 +2,69 @@ import CheckboxOptions from '@renderer/components/ui/checkboxOption/CheckboxOpti
 import OptionsDescriptor from '@renderer/components/ui/optionsDescriptor/OptionsDescriptor';
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { IOptions } from '@shared/types/options.type';
-import { useState } from 'react';
-import { setGammaOut, setGammaVal, setIsGamma } from '../../options/store/optionsSlice';
+import { useEffect, useState } from 'react';
+import {
+  setGammaOut,
+  setGammaVal,
+  setIsGamma,
+  setIsGammaOut,
+  setIsGammaVal,
+  setIsOptionsReseted,
+  setIsOptionsUpdated,
+} from '../../options/store/optionsSlice';
 
 const GammaOption = (): JSX.Element => {
-  const { isGamma, gammaVal, gammaOut } = useAppSelector<IOptions>((state) => state.options);
+  const { isGamma, isGammaVal, gammaVal, isGammaOut, gammaOut } = useAppSelector<IOptions>(
+    (state) => state.options
+  );
   const dispatch = useAppDispatch();
-  const [gammaOutCheckbox, setGammaOutCheckbox] = useState(false);
-  const [gammaCheckbox, setGammaCheckbox] = useState(false);
+
+  const [gammaCheckbox, setGammaCheckbox] = useState(isGamma || false);
+  const [gammaValCheckbox, setGammaValCheckbox] = useState(isGammaVal || false);
+  const [gammaOutCheckbox, setGammaOutCheckbox] = useState(isGammaOut || false);
+
+  const updateOptionsNotifier = (): void => {
+    dispatch(setIsOptionsUpdated(false));
+    dispatch(setIsOptionsReseted(false));
+  };
+
+  const updateIsGamma = (): void => {
+    dispatch(setIsGamma(!gammaCheckbox));
+    setGammaCheckbox((gammaCheckbox) => !gammaCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsGammaVal = (): void => {
+    dispatch(setIsGammaVal(!gammaValCheckbox));
+    setGammaValCheckbox((gammaValCheckbox) => !gammaValCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsGammaOut = (): void => {
+    dispatch(setIsGammaOut(!gammaOutCheckbox));
+    setGammaOutCheckbox((gammaOutCheckbox) => !gammaOutCheckbox);
+    updateOptionsNotifier();
+  };
+
+  useEffect(() => {
+    setGammaCheckbox(isGamma || false);
+    setGammaValCheckbox(isGammaVal || false);
+    setGammaOutCheckbox(isGammaOut || false);
+  }, [isGamma, isGammaVal, isGammaOut]);
+
   return (
     <>
-      <div className="mt-[25px] flex  flex-col md:flex-row gap-5 justify-between">
-        <div
-          className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
-  pl-6 pr-4 w-full md:w-[48%] h-[40px]"
-        >
+      <div className="options__container md:flex-row gap-5">
+        <div className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 pl-6 pr-4 w-full md:w-[48%] h-[40px]">
           <input
             type="checkbox"
-            name="bordered-checkbox"
-            checked={isGamma}
+            checked={gammaCheckbox}
             className="w-4 h-4 bg-blue-500 border-gray-300 rounded 
-      focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 
-      dark:bg-gray-700 dark:border-gray-600"
-            onChange={(): void => dispatch(setIsGamma(!isGamma))}
+      focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            onChange={updateIsGamma}
           />
-          <label htmlFor="bordered-checkbox" className="w-full py-2 ms-2 pl-[12px] font-inter">
-            Gamma
-          </label>
+          <label className="options__label">Gamma</label>
         </div>
       </div>
-      <OptionsDescriptor isChecked={isGamma}>
+      <OptionsDescriptor isChecked={gammaCheckbox}>
         <>
           Gamma correction is a technique used in image processing to adjust the brightness and
           contrast of an image. It involves applying a power-law function to the pixel values of an
@@ -89,14 +122,14 @@ const GammaOption = (): JSX.Element => {
           </svg>
         </>
       </OptionsDescriptor>
-      {isGamma && (
+      {gammaCheckbox && (
         <div className="md:pl-10">
           <CheckboxOptions
-            checkboxValue={gammaCheckbox}
+            checkboxValue={gammaValCheckbox}
             checkboxLabel="Set GAMMA between 1.0 and 3.0"
             inputValue={gammaVal}
             setInputValue={setGammaVal}
-            setCheckboxValue={setGammaCheckbox}
+            setCheckboxValue={updateIsGammaVal}
             type="number"
             min={1.0}
             max={3.0}
@@ -104,14 +137,14 @@ const GammaOption = (): JSX.Element => {
           />
         </div>
       )}
-      {isGamma && (
+      {gammaCheckbox && (
         <div className="md:pl-10">
           <CheckboxOptions
             checkboxValue={gammaOutCheckbox}
             checkboxLabel="Set GAMMA OUT between 1.0 and 3.0"
             inputValue={gammaOut}
             setInputValue={setGammaOut}
-            setCheckboxValue={setGammaOutCheckbox}
+            setCheckboxValue={updateIsGammaOut}
             type="number"
             min={1.0}
             max={3.0}

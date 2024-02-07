@@ -2,40 +2,69 @@ import OptionsDescriptor from '@renderer/components/ui/optionsDescriptor/Options
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { BLUR_SIGMA_MAX_VALUE, BLUR_SIGMA_MIN_VALUE } from '@shared/constants/options.constants';
 import { IOptions } from '@shared/types/options.type';
-import { useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import CheckboxOptions from '../../../components/ui/checkboxOption/CheckboxOptions';
-import { setBlurSigma, setIsBlur } from '../../options/store/optionsSlice';
+import {
+  setBlurSigma,
+  setIsBlur,
+  setIsBlurDefaultSettings,
+  setIsBlurSigma,
+  setIsOptionsReseted,
+  setIsOptionsUpdated,
+} from '../../options/store/optionsSlice';
 
 const BlurOption = (): JSX.Element => {
-  const { blurSigma } = useAppSelector<IOptions>((state) => state.options);
+  const { isBlur, isBlurDefaultSettings, isBlurSigma, blurSigma } = useAppSelector<IOptions>(
+    (state) => state.options
+  );
   const dispatch = useAppDispatch();
-  const [isBlurCheckbox, setIsBlurCheckbox] = useState(false);
-  const [isSetDefaultSettings, setIsSetDefaultSettings] = useState(false);
-  const [isBlurSigmaChecked, setIsBlurSigmaChecked] = useState(false);
+  const [isBlurCheckbox, setIsBlurCheckbox] = useState(isBlur || false);
+  const [isSetDefaultSettings, setIsSetDefaultSettings] = useState(isBlurDefaultSettings || false);
+  const [isBlurSigmaChecked, setIsBlurSigmaChecked] = useState(isBlurSigma || false);
 
-  const updateDefaultSettings = (): void => {
-    dispatch(setIsBlur(!isSetDefaultSettings));
-    setIsSetDefaultSettings((isSetDefaultSettings) => !isSetDefaultSettings);
+  const updateOptionsNotifier = (): void => {
+    dispatch(setIsOptionsUpdated(false));
+    dispatch(setIsOptionsReseted(false));
   };
+  const updateDefaultSettings = (): void => {
+    dispatch(setIsBlurDefaultSettings(!isSetDefaultSettings));
+    setIsSetDefaultSettings((isSetDefaultSettings) => !isSetDefaultSettings);
+    setIsBlurSigmaChecked(false);
+    updateOptionsNotifier();
+  };
+  const updateIsBlur = (): void => {
+    dispatch(setIsBlur(!isBlurCheckbox));
+    setIsBlurCheckbox((isBlurCheckbox) => !isBlurCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsBlurSigma = (): void => {
+    dispatch(setIsBlurSigma(!isBlurSigmaChecked));
+    setIsBlurSigmaChecked((isBlurSigmaChecked) => !isBlurSigmaChecked);
+    updateOptionsNotifier();
+  };
+
+  useEffect(() => {
+    setIsBlurCheckbox(isBlur || false);
+    setIsSetDefaultSettings(isBlurDefaultSettings || false);
+    setIsBlurSigmaChecked(isBlurSigma || false);
+  }, [isBlur, isBlurDefaultSettings, isBlurSigma]);
+
   return (
     <>
-      <div className="mt-[25px] flex  flex-col md:flex-row gap-5 justify-between">
+      <div className="options__container md:flex-row">
         <div
           className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
   pl-6 pr-4 w-full md:w-[48%] h-[40px]"
         >
           <input
             type="checkbox"
-            name="bordered-checkbox"
             checked={isBlurCheckbox}
             className="w-4 h-4 bg-blue-500 border-gray-300 rounded 
       focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 
       dark:bg-gray-700 dark:border-gray-600"
-            onChange={(): void => setIsBlurCheckbox((isBlurCheckbox) => !isBlurCheckbox)}
+            onChange={updateIsBlur}
           />
-          <label htmlFor="bordered-checkbox" className="w-full py-2 ms-2 pl-[12px] font-inter">
-            Blur
-          </label>
+          <label className="options__label">Blur</label>
         </div>
       </div>
       <OptionsDescriptor isChecked={isBlurCheckbox}>
@@ -45,8 +74,8 @@ const BlurOption = (): JSX.Element => {
         certain visual effects.
       </OptionsDescriptor>
       {isBlurCheckbox && (
-        <div className="md:pl-10 w-full">
-          <div className="mt-[25px] flex justify-between">
+        <div className="options__sub-container">
+          <div className="options__container">
             <div
               className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
   pl-6 pr-4 w-[98%] h-[40px]"
@@ -57,12 +86,11 @@ const BlurOption = (): JSX.Element => {
                 className="w-4 h-4 bg-blue-500 border-gray-300 rounded 
                 focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 
                 dark:bg-gray-700 dark:border-gray-600"
-                onChange={updateDefaultSettings}
+                onChange={(e: ChangeEvent<HTMLInputElement>): void =>
+                  updateDefaultSettings(e.target.checked)
+                }
               />
-              <label
-                htmlFor="bordered-checkbox-1"
-                className="w-full py-2 ms-2 pl-[12px] font-inter"
-              >
+              <label className="options__label">
                 Set Default Options (a fast 3x3 box blur (equivalent to a box linear filter))
               </label>
             </div>
@@ -70,13 +98,13 @@ const BlurOption = (): JSX.Element => {
         </div>
       )}
       {isBlurCheckbox && (
-        <div className="md:pl-10">
+        <div className="options__sub-container">
           <CheckboxOptions
             checkboxValue={isBlurSigmaChecked}
             checkboxLabel="Set SIGMA for slower Gaussian blur"
             inputValue={blurSigma}
             setInputValue={setBlurSigma}
-            setCheckboxValue={setIsBlurSigmaChecked}
+            setCheckboxValue={updateIsBlurSigma}
             type="number"
             min={BLUR_SIGMA_MIN_VALUE}
             max={BLUR_SIGMA_MAX_VALUE}

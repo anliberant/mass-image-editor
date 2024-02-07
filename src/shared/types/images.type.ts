@@ -10,4 +10,9 @@ export interface IImages {
   destPath: string;
   destNameFolder: string;
   isCreateDestSub: boolean;
+  isCreatePrefix: boolean;
+  prefix: string;
+  isCreateSuffix: boolean;
+  suffix: string;
+  isAllCompleted: boolean;
 }

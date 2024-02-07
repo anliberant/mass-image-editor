@@ -1,0 +1,6 @@
+.tableContainer {
+    @apply relative overflow-x-auto shadow-md sm:rounded-lg mt-[25px] max-h-64 overflow-y-scroll;
+}
+.tableRow {
+    @apply text-center px-6 py-3;
+}

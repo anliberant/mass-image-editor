@@ -2,30 +2,72 @@ import CheckboxOptions from '@renderer/components/ui/checkboxOption/CheckboxOpti
 import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { ChannelTypes } from '@shared/types/formats.type';
 import { IOptions } from '@shared/types/options.type';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import {
   setEnsureAlphaValue,
   setExtractChannel,
+  setIsChannelManipulation,
   setIsEnsureAlpha,
+  setIsExtractChannel,
+  setIsOptionsReseted,
+  setIsOptionsUpdated,
   setIsRemoveAlpha,
 } from '../store/optionsSlice';
 
 const ChanelManipulation = (): JSX.Element => {
-  const { isRemoveAlpha, isEnsureAlpha, ensureAlphaVal, extractChannel } = useAppSelector<IOptions>(
-    (state) => state.options
-  );
+  const {
+    isChannelManipulation,
+    isRemoveAlpha,
+    isEnsureAlpha,
+    ensureAlphaVal,
+    isExtractChannel,
+    extractChannel,
+  } = useAppSelector<IOptions>((state) => state.options);
   const dispatch = useAppDispatch();
 
-  const [channelManipulationCheckbox, setChannelManipulationCheckbox] = useState(false);
-  const [extractChannelCheckbox, setExtractChannelCheckbox] = useState(false);
-  const [ensureAlphaValCheckbox, setEnsureAlphaValCheckbox] = useState(false);
+  const [channelManipulationCheckbox, setChannelManipulationCheckbox] = useState(
+    isChannelManipulation || false
+  );
+  const [isRemoveAlphaCheckbox, setIsRemoveAlphaCheckbox] = useState(isRemoveAlpha || false);
+  const [isEnsureAlphaCheckbox, setIsEnsureAlphaCheckbox] = useState(isEnsureAlpha || false);
+  const [extractChannelCheckbox, setExtractChannelCheckbox] = useState(isExtractChannel || false);
 
-  const updateEnsureAlphaVal = () => {
-    dispatch(setIsEnsureAlpha(!isEnsureAlpha));
-    setEnsureAlphaValCheckbox(!isEnsureAlpha);
+  const updateOptionsNotifier = (): void => {
+    dispatch(setIsOptionsUpdated(false));
+    dispatch(setIsOptionsReseted(false));
   };
+  const updateIsChannelManipulation = (): void => {
+    dispatch(setIsChannelManipulation(!channelManipulationCheckbox));
+    setChannelManipulationCheckbox((channelManipulationCheckbox) => !channelManipulationCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsRemoveAlpha = (): void => {
+    dispatch(setIsRemoveAlpha(!isRemoveAlphaCheckbox));
+    setIsRemoveAlphaCheckbox((isRemoveAlphaCheckbox) => !isRemoveAlphaCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsEnsureAlpha = (): void => {
+    dispatch(setIsEnsureAlpha(!isEnsureAlphaCheckbox));
+    setIsEnsureAlphaCheckbox((isEnsureAlphaCheckbox) => !isEnsureAlphaCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateIsExtractChannel = (): void => {
+    dispatch(setIsExtractChannel(!extractChannelCheckbox));
+    setExtractChannelCheckbox((extractChannelCheckbox) => !extractChannelCheckbox);
+    updateOptionsNotifier();
+  };
+  const updateExtractChannel = (val: string): void => {
+    dispatch(setExtractChannel(val));
+    updateOptionsNotifier();
+  };
+
+  useEffect(() => {
+    setChannelManipulationCheckbox(isChannelManipulation || false);
+    setIsRemoveAlphaCheckbox(isRemoveAlpha || false);
+    setIsEnsureAlphaCheckbox(isEnsureAlpha || false);
+  }, [isChannelManipulation, isRemoveAlpha, isEnsureAlpha, isExtractChannel]);
   return (
-    <div className="mt-[25px] flex flex-col justify-between">
+    <div className="options__container">
       <div
         className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
 pl-6 pr-4 w-full h-[40px]"
@@ -36,44 +78,36 @@ pl-6 pr-4 w-full h-[40px]"
           className="w-4 h-4 text-blue-600 bg-gray-100
      border-gray-300 rounded-xl focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 
      focus:ring-2 dark:bg-gray-500"
-          onChange={(): void =>
-            setChannelManipulationCheckbox(
-              (channelManipulationCheckbox) => !channelManipulationCheckbox
-            )
-          }
+          onChange={updateIsChannelManipulation}
         />
-        <label htmlFor="bordered-checkbox-1" className="w-full py-2 ms-2 pl-[12px] font-inter">
-          Channel Manipulation
-        </label>
+        <label className="options__label">Channel Manipulation</label>
       </div>
       {channelManipulationCheckbox && (
-        <div className="md:pl-10 mt-[25px] flex  flex-col md:flex-row gap-5 justify-between">
+        <div className="mt-[25px] flex flex-col justify-between md:pl-10 md:flex-row gap-5">
           <div
             className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
  pl-6 pr-4 w-full md:w-[98%] h-[40px]"
           >
             <input
               type="checkbox"
-              checked={isRemoveAlpha}
+              checked={isRemoveAlphaCheckbox}
               className="w-4 h-4 bg-blue-500 border-gray-300 rounded 
      focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 
      dark:bg-gray-700 dark:border-gray-600"
-              onChange={(): void => dispatch(setIsRemoveAlpha(!isRemoveAlpha))}
+              onChange={updateIsRemoveAlpha}
             />
-            <label className="w-full py-2 ms-2 pl-[12px] font-inter">
-              Remove Alpha (Transparency)
-            </label>
+            <label className="options__label">Remove Alpha (Transparency)</label>
           </div>
         </div>
       )}
       {channelManipulationCheckbox && (
         <div className="md:pl-10">
           <CheckboxOptions
-            checkboxValue={ensureAlphaValCheckbox}
+            checkboxValue={isEnsureAlphaCheckbox}
             checkboxLabel="Ensure Alpha"
             inputValue={ensureAlphaVal}
             setInputValue={setEnsureAlphaValue}
-            setCheckboxValue={updateEnsureAlphaVal}
+            setCheckboxValue={updateIsEnsureAlpha}
             type="number"
             min={0}
             max={1}
@@ -82,7 +116,7 @@ pl-6 pr-4 w-full h-[40px]"
         </div>
       )}
       {channelManipulationCheckbox && (
-        <div className="md:pl-10 mt-[25px] flex  flex-col md:flex-row gap-5 justify-between">
+        <div className="options__container md:pl-10 md:flex-row gap-5">
           <div
             className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-300 
  pl-6 pr-4 w-full md:w-[48%] h-[40px]"
@@ -93,11 +127,9 @@ pl-6 pr-4 w-full h-[40px]"
               className="w-4 h-4 bg-blue-500 border-gray-300 rounded 
      focus:ring-blue-500 dark:focus:ring-blue-500 dark:ring-offset-gray-800 focus:ring-2 
      dark:bg-gray-700 dark:border-gray-600"
-              onChange={(): void =>
-                setExtractChannelCheckbox((extractChannelCheckbox) => !extractChannelCheckbox)
-              }
+              onChange={updateIsExtractChannel}
             />
-            <label className="w-full py-2 ms-2 pl-[12px] font-inter">Extract Channel</label>
+            <label className="options__label">Extract Channel</label>
           </div>
           {extractChannelCheckbox && (
             <div
@@ -109,8 +141,8 @@ pl-6 pr-4 w-full h-[40px]"
                 className="block w-full border-0 border-b-2  dark:border-gray-100 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white
                 dark:bg-black"
                 value={extractChannel}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  dispatch(setExtractChannel(e.target.value))
+                onChange={(e: ChangeEvent<HTMLSelectElement>): void =>
+                  updateExtractChannel(e.target.value)
                 }
               >
                 <option value={ChannelTypes.NONE}>{ChannelTypes.NONE}</option>

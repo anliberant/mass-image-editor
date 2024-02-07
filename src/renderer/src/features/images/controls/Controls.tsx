@@ -8,7 +8,8 @@ import { ControlsProps } from './Controls.props';
 
 const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { images, destPath } = useAppSelector<IImages>((state) => state.images);
+  const { images, destPath, isAllCompleted, isCreatePrefix, prefix, isCreateSuffix, suffix } =
+    useAppSelector<IImages>((state) => state.images);
   const {
     isExtend,
     leftExtend,
@@ -40,7 +41,7 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
     isGamma,
     gammaOut,
     isNegate,
-    negateAlpha,
+    isNegateAlpha,
     isNormalize,
     normalizeLower,
     normalizeUpper,
@@ -59,11 +60,17 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
     modulateHue,
     modulateLightness,
     isSharpen,
+    isSharpenSigma,
     sharpenSigma,
+    isSharpenM1,
     sharpenM1,
+    isSharpenM2,
     sharpenM2,
+    isSharpenX1,
     sharpenX1,
+    isSharpenY2,
     sharpenY2,
+    isSharpenY3,
     sharpenY3,
     isTint,
     tintColor,
@@ -120,7 +127,7 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
         isGamma,
         gammaOut,
         isNegate,
-        negateAlpha,
+        isNegateAlpha,
         isNormalize,
         normalizeLower,
         normalizeUpper,
@@ -139,11 +146,17 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
         modulateHue,
         modulateLightness,
         isSharpen,
+        isSharpenSigma,
         sharpenSigma,
+        isSharpenM1,
         sharpenM1,
+        isSharpenM2,
         sharpenM2,
+        isSharpenX1,
         sharpenX1,
+        isSharpenY2,
         sharpenY2,
+        isSharpenY3,
         sharpenY3,
         isTint,
         tintColor,
@@ -154,16 +167,21 @@ const Controls = ({ setIsUpdated }: ControlsProps): JSX.Element => {
         isEnsureAlpha,
         ensureAlphaVal,
         extractChannel,
+        isCreatePrefix,
+        prefix,
+        isCreateSuffix,
+        suffix,
       });
       setIsUpdated(true);
     });
   };
+
   return (
     <div className="w-full flex justify-between mt-[25px]">
       <Button type="clear" onClick={(): void => dispatch(nullImages())}>
         Clear list
       </Button>
-      <Button type="optimize" onClick={sendImagesList}>
+      <Button type="optimize" onClick={sendImagesList} disabled={isAllCompleted}>
         Optimize
       </Button>
     </div>

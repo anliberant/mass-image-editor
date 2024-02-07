@@ -29,13 +29,13 @@ const ImgForm = (): JSX.Element => {
     <div className="z-10">
       <div
         className="flex flex-col w-[480px] items-center justify-center 
-        bg-gray-100 hover:bg-gray-250 dark:hover:bg-bray-400 dark:bg-gray-500 dark:hover:bg-gray-250
+        bg-gray-100 hover:bg-gray-250 dark:bg-gray-500 dark:hover:bg-gray-250
       rounded-lg hover:shadow-lg border border-dashed border-blue-200 hover:rotate-4 h-full dark:hover:shadow-gray-400"
       >
         <label
           className="w-96 flex flex-col items-center 
         px-4 py-4 text-gray-500 dark:text-white dark:hover:text-gray-500 tracking-wide font-serif
-        text-3xl hover:text-teal-800 cursor-pointer"
+        text-3xl hover:text-gray-800 cursor-pointer"
         >
           <svg
             width="136"

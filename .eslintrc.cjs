@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'eslint-import-resolver-typescript'],
+  plugins: ['@typescript-eslint', 'react'],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -26,51 +26,53 @@ module.exports = {
   },
   settings: {
     jsdoc: {
-      mode: "typescript",
+      mode: 'typescript',
       // supported tags https://github.com/microsoft/TypeScript-wiki/blob/master/JSDoc-support-in-JavaScript.md
       tagNamePreference: {
-        ...["implements", "const", "memberof", "readonly", "yields"].reduce(
-          (acc, tag) => {
-            acc[tag] = {
-              message: `@${tag} currently not supported in Typescript`
-            };
-            return acc;
-          },
-          {}
-        ),
-        extends: "extends",
-        return: "returns",
-        constructor: "constructor",
-        prop: "property",
-        arg: "param",
-        augments: "extends",
+        ...['implements', 'const', 'memberof', 'readonly', 'yields'].reduce((acc, tag) => {
+          acc[tag] = {
+            message: `@${tag} currently not supported in Typescript`,
+          };
+          return acc;
+        }, {}),
+        extends: 'extends',
+        return: 'returns',
+        constructor: 'constructor',
+        prop: 'property',
+        arg: 'param',
+        augments: 'extends',
         description: false,
         desc: false,
         inheritdoc: false,
-        class: "constructor"
+        class: 'constructor',
       },
-      overrideReplacesDocs: false
+      overrideReplacesDocs: false,
     },
-    "import/parsers": {
-      "@typescript-eslint/parser": [".ts"]
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts'],
     },
-    "import/internal-regex": "^@",
-    "import/resolver": {
-      "eslint-import-resolver-custom-alias": {
-        "alias": {
-          "@renderer": "./src/renderer/src/",
-          "@shared": "./src/shared",
+    'import/internal-regex': '^@',
+    'import/resolver': {
+      'eslint-import-resolver-custom-alias': {
+        alias: {
+          '@renderer': './src/renderer/src/',
+          '@shared': './src/shared',
         },
-        "extensions": [".ts", ".tsx", ".js", ".jsx"],
-      }
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      },
     },
   },
   overrides: [
     {
-      files: ["test/**/*.js"],
+      files: ['test/**/*.js'],
       env: {
-        jest: true
-      }
-    }
-  ]
+        jest: true,
+      },
+    },
+  ],
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
 };

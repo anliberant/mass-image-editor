@@ -1,18 +1,16 @@
 import { TabsProps } from './Tabs.props';
 
 const Tabs = ({ tabStatus, setTabStatus }: TabsProps): JSX.Element => {
+  const tabDivStyles = `flex w-[48%] height-[34px] 
+  flex-shrink-0 rounded-lg py-[5px] pl-[16px] cursor-pointer bg-white dark:bg-black`;
+
   return (
     <div
       className="w-full bg-gray-150 dark:bg-gray-350 h-[40px] 
-      rounded-lg flex flex-row justify-between items-center pl-1 pr-1 mt-[25px]"
+    rounded-lg flex flex-row justify-between items-center pl-1 pr-1 mt-[25px]"
     >
       <div
-        className={`flex w-[48%] height-[34px] 
-          flex-shrink-0 rounded-lg py-[5px] pl-[16px] ${
-            tabStatus === 'files'
-              ? 'bg-white dark:bg-black'
-              : 'bg-gray-200 dark:bg-gray-450 cursor-pointer'
-          } `}
+        className={tabDivStyles}
         onClick={(): void => {
           if (tabStatus === 'files') {
             return;
@@ -34,15 +32,10 @@ const Tabs = ({ tabStatus, setTabStatus }: TabsProps): JSX.Element => {
             strokeLinejoin="round"
           />
         </svg>
-        <span className="font-serif text-lg pl-2 text-black dark:text-white">Files</span>
+        <span className="font-serif text-lg pl-3 text-black dark:text-white">Files</span>
       </div>
       <div
-        className={`flex w-[48%] height-[34px] 
-         flex-shrink-0 rounded-lg py-[5px] pl-[16px] ${
-           tabStatus === 'options'
-             ? 'bg-white dark:bg-black'
-             : 'bg-gray-200 dark:bg-gray-450 cursor-pointer'
-         } `}
+        className={tabDivStyles}
         onClick={(): void => {
           if (tabStatus === 'options') {
             return;
@@ -66,7 +59,7 @@ const Tabs = ({ tabStatus, setTabStatus }: TabsProps): JSX.Element => {
           />
         </svg>
 
-        <span className="font-serif text-lg pl-2 text-black dark:text-white">Options</span>
+        <span className="font-serif text-lg pl-3 text-black dark:text-white">Options</span>
       </div>
     </div>
   );
